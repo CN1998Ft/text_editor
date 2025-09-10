@@ -7,11 +7,17 @@
 #include <cstdlib>
 #include <iostream>
 
+/*** defines ***/
+
+#define CTRL_KEY(k) ((k) & 0x1f)
+
 /*** data ***/
+
 // struct containing all terminal information
 struct termios orig_termios;
 
 /*** terminal ***/
+
 void die(const char *s) {
   perror(s);
   exit(1);
@@ -52,31 +58,36 @@ void enableRawModel() {
   }
 }
 
+char editorReadKey() {
+  int nread;
+  char c;
+  while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
+    if (nread == -1 && errno != EAGAIN) {
+      die("read");
+    }
+  }
+  return c;
+}
+
+/*** input ***/
+
+void editorProcessKeypress() {
+  char c = editorReadKey();
+
+  switch (c) {
+  case CTRL_KEY('q'):
+    exit(0);
+    break;
+  }
+}
+
 /*** init ***/
+
 int main() {
   enableRawModel();
 
-  // char c;
-  // keep running program until there is no more bytes to read and c is not 'q'
-  // while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q') {
   while (1) {
-    char c = '\0';
-    if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) {
-      die("read");
-    }
-    if (iscntrl(c)) {
-      // std::cout << (int)c << std::endl;
-      // to enable "carriage return" and "new line" after diable OPOST
-      std::cout << (int)c << "\r\n";
-    } else {
-      // std::cout << (int)c << "('" << c << "')" << std::endl;
-      // to enable "carriage return" and "new line" after diable OPOST
-      std::cout << (int)c << "('" << c << "')" << "\r\n";
-    }
-    if (c == 'q') {
-      break;
-    }
+    editorProcessKeypress();
   }
-  // }
   return 0;
 }
