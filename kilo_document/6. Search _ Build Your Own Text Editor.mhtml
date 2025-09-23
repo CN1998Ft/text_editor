@@ -1,0 +1,2028 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: https://viewsourcecode.org/snaptoken/kilo/06.search.html
+Subject: 6. Search | Build Your Own Text Editor
+Date: Tue, 23 Sep 2025 12:38:05 +0100
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--AtqdXftyM3l2mpaWVKfg21ycmsarWTHSFmwJJSYjEQ----"
+
+
+------MultipartBoundary--AtqdXftyM3l2mpaWVKfg21ycmsarWTHSFmwJJSYjEQ----
+Content-Type: text/html
+Content-ID: <frame-52DD9075882A8A50928F6BAC7A5437A4@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://viewsourcecode.org/snaptoken/kilo/06.search.html
+
+<!DOCTYPE html><html><head><meta http-equiv=3D"Content-Type" content=3D"tex=
+t/html; charset=3DUTF-8">
+   =20
+    <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=
+=3D1.0, maximum-scale=3D1.0">
+    <title>6. Search | Build Your Own Text Editor</title>
+    <link href=3D"https://viewsourcecode.org/snaptoken/kilo/style.css" rel=
+=3D"stylesheet">
+  </head>
+  <body data-new-gr-c-s-check-loaded=3D"14.1254.0" data-gr-ext-installed=3D=
+"">
+    <header class=3D"bar">
+      <nav>
+        <a href=3D"https://viewsourcecode.org/snaptoken/kilo/05.aTextEditor=
+.html">=E2=86=90 prev</a>
+        <a href=3D"https://viewsourcecode.org/snaptoken/kilo/index.html">co=
+ntents</a>
+        <a href=3D"https://viewsourcecode.org/snaptoken/kilo/07.syntaxHighl=
+ighting.html">next =E2=86=92</a>
+      </nav>
+    </header>
+    <div id=3D"container">
+      <h1 id=3D"search">Search</h1>
+
+<p>Let=E2=80=99s use <code>editorPrompt()</code> to implement a minimal sea=
+rch feature. When the user
+types a search query and presses <kbd>Enter</kbd>, we=E2=80=99ll loop throu=
+gh all the
+rows of the file, and if a row contains their query string, we=E2=80=99ll m=
+ove the
+cursor to the match.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/basic-search/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 131</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/basic-search">basic-search</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line folded"><span clas=
+s=3D"cm">/*** prototypes ***/</span></div><div class=3D"line folded"><span =
+class=3D"cm">/*** terminal ***/</span></div><div class=3D"line folded"><spa=
+n class=3D"cm">/*** row operations ***/</span></div><div class=3D"line fold=
+ed"><span class=3D"cm">/*** editor operations ***/</span></div><div class=
+=3D"line"><span class=3D"cm">/*** file i/o ***/</span></div><div class=3D"l=
+ine"></div><div class=3D"line folded"><span class=3D"kt">char</span> <span =
+class=3D"o">*</span><span class=3D"nf">editorRowsToString</span><span class=
+=3D"p">(</span><span class=3D"kt">int</span> <span class=3D"o">*</span><spa=
+n class=3D"n">buflen</span><span class=3D"p">)</span> <span class=3D"p">{</=
+span> =E2=80=A6 <span class=3D"p">}</span></div><div class=3D"line"></div><=
+div class=3D"line folded"><span class=3D"kt">void</span> <span class=3D"nf"=
+>editorOpen</span><span class=3D"p">(</span><span class=3D"kt">char</span> =
+<span class=3D"o">*</span><span class=3D"n">filename</span><span class=3D"p=
+">)</span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span><=
+/div><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt=
+">void</span> <span class=3D"nf">editorSave</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><ins class=3D"line"><span class=3D"cm">/*** find ***=
+/</span></ins><ins class=3D"line"></ins><ins class=3D"line"><span class=3D"=
+kt">void</span> <span class=3D"nf">editorFind</span><span class=3D"p">()</s=
+pan> <span class=3D"p">{</span></ins><ins class=3D"line">  <span class=3D"k=
+t">char</span> <span class=3D"o">*</span><span class=3D"n">query</span> <sp=
+an class=3D"o">=3D</span> <span class=3D"n">editorPrompt</span><span class=
+=3D"p">(</span><span class=3D"s">"Search: %s (ESC to cancel)"</span><span c=
+lass=3D"p">);</span></ins><ins class=3D"line">  <span class=3D"k">if</span>=
+ <span class=3D"p">(</span><span class=3D"n">query</span> <span class=3D"o"=
+>=3D=3D</span> <span class=3D"nb">NULL</span><span class=3D"p">)</span> <sp=
+an class=3D"k">return</span><span class=3D"p">;</span></ins><ins class=3D"l=
+ine"></ins><ins class=3D"line">  <span class=3D"kt">int</span> <span class=
+=3D"n">i</span><span class=3D"p">;</span></ins><ins class=3D"line">  <span =
+class=3D"k">for</span> <span class=3D"p">(</span><span class=3D"n">i</span>=
+ <span class=3D"o">=3D</span> <span class=3D"mi">0</span><span class=3D"p">=
+;</span> <span class=3D"n">i</span> <span class=3D"o">&lt;</span> <span cla=
+ss=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">numrows</span>=
+<span class=3D"p">;</span> <span class=3D"n">i</span><span class=3D"o">++</=
+span><span class=3D"p">)</span> <span class=3D"p">{</span></ins><ins class=
+=3D"line">    <span class=3D"n">erow</span> <span class=3D"o">*</span><span=
+ class=3D"n">row</span> <span class=3D"o">=3D</span> <span class=3D"o">&amp=
+;</span><span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"=
+n">row</span><span class=3D"p">[</span><span class=3D"n">i</span><span clas=
+s=3D"p">];</span></ins><ins class=3D"line">    <span class=3D"kt">char</spa=
+n> <span class=3D"o">*</span><span class=3D"n">match</span> <span class=3D"=
+o">=3D</span> <span class=3D"n">strstr</span><span class=3D"p">(</span><spa=
+n class=3D"n">row</span><span class=3D"o">-&gt;</span><span class=3D"n">ren=
+der</span><span class=3D"p">,</span> <span class=3D"n">query</span><span cl=
+ass=3D"p">);</span></ins><ins class=3D"line">    <span class=3D"k">if</span=
+> <span class=3D"p">(</span><span class=3D"n">match</span><span class=3D"p"=
+>)</span> <span class=3D"p">{</span></ins><ins class=3D"line">      <span c=
+lass=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">cy</span> <s=
+pan class=3D"o">=3D</span> <span class=3D"n">i</span><span class=3D"p">;</s=
+pan></ins><ins class=3D"line">      <span class=3D"n">E</span><span class=
+=3D"p">.</span><span class=3D"n">cx</span> <span class=3D"o">=3D</span> <sp=
+an class=3D"n">match</span> <span class=3D"o">-</span> <span class=3D"n">ro=
+w</span><span class=3D"o">-&gt;</span><span class=3D"n">render</span><span =
+class=3D"p">;</span></ins><ins class=3D"line">      <span class=3D"n">E</sp=
+an><span class=3D"p">.</span><span class=3D"n">rowoff</span> <span class=3D=
+"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</span><span cl=
+ass=3D"n">numrows</span><span class=3D"p">;</span></ins><ins class=3D"line"=
+>      <span class=3D"k">break</span><span class=3D"p">;</span></ins><ins c=
+lass=3D"line">    <span class=3D"p">}</span></ins><ins class=3D"line">  <sp=
+an class=3D"p">}</span></ins><ins class=3D"line"></ins><ins class=3D"line">=
+  <span class=3D"n">free</span><span class=3D"p">(</span><span class=3D"n">=
+query</span><span class=3D"p">);</span></ins><ins class=3D"line"><span clas=
+s=3D"p">}</span></ins><div class=3D"line"></div><div class=3D"line folded">=
+<span class=3D"cm">/*** append buffer ***/</span></div><div class=3D"line f=
+olded"><span class=3D"cm">/*** output ***/</span></div><div class=3D"line f=
+olded"><span class=3D"cm">/*** input ***/</span></div><div class=3D"line fo=
+lded"><span class=3D"cm">/*** init ***/</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c1">=E2=99=8E=EF=B8=8E compiles, but with no obser=
+vable effects</div>
+</div>
+</div>
+
+
+<p><code>strstr()</code> comes from <code>&lt;string.h&gt;</code>.</p>
+
+<p>If they pressed <kbd>Escape</kbd> to cancel the input prompt, then
+<code>editorPrompt()</code> returns <code>NULL</code> and we abort the sear=
+ch.</p>
+
+<p>Otherwise, we loop through all the rows of the file. We use <code>strstr=
+()</code> to check
+if <code>query</code> is a substring of the current row. It returns <code>N=
+ULL</code> if there is no
+match, otherwise it returns a pointer to the matching substring. To convert
+that into an index that we can set <code>E.cx</code> to, we subtract the <c=
+ode>row-&gt;render</code>
+pointer from the <code>match</code> pointer, since <code>match</code> is a =
+pointer into the
+<code>row-&gt;render</code> string. Lastly, we set <code>E.rowoff</code> so=
+ that we are scrolled to the
+very bottom of the file, which will cause <code>editorScroll()</code> to sc=
+roll upwards at
+the next screen refresh so that the matching line will be at the very top o=
+f
+the screen. This way, the user doesn=E2=80=99t have to look all over their =
+screen to
+find where their cursor jumped to, and where the matching line is.</p>
+
+<p>There=E2=80=99s one problem here. Did you notice what we just did wrong?=
+ We assigned a
+<code>render</code> index to <code>E.cx</code>, but <code>E.cx</code> is an=
+ index into <code>chars</code>. If there are
+tabs to the left of the match, the cursor is going to be in the wrong posit=
+ion.
+We need to convert the <code>render</code> index into a <code>chars</code> =
+index before assigning it
+to <code>E.cx</code>. Let=E2=80=99s create an <code>editorRowRxToCx()</code=
+> function, which is the opposite
+of the <code>editorRowCxToRx()</code> function we wrote in
+<a href=3D"https://viewsourcecode.org/snaptoken/kilo/04.aTextViewer.html#ta=
+bs-and-the-cursor">chapter 4</a>, but contains a lot of the
+same code.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/rx-to-cx/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 132</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/rx-to-cx">rx-to-cx</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line folded"><span clas=
+s=3D"cm">/*** prototypes ***/</span></div><div class=3D"line folded"><span =
+class=3D"cm">/*** terminal ***/</span></div><div class=3D"line"><span class=
+=3D"cm">/*** row operations ***/</span></div><div class=3D"line"></div><div=
+ class=3D"line folded"><span class=3D"kt">int</span> <span class=3D"nf">edi=
+torRowCxToRx</span><span class=3D"p">(</span><span class=3D"n">erow</span> =
+<span class=3D"o">*</span><span class=3D"n">row</span><span class=3D"p">,</=
+span> <span class=3D"kt">int</span> <span class=3D"n">cx</span><span class=
+=3D"p">)</span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</s=
+pan></div><div class=3D"line"></div><ins class=3D"line"><span class=3D"kt">=
+int</span> <span class=3D"nf">editorRowRxToCx</span><span class=3D"p">(</sp=
+an><span class=3D"n">erow</span> <span class=3D"o">*</span><span class=3D"n=
+">row</span><span class=3D"p">,</span> <span class=3D"kt">int</span> <span =
+class=3D"n">rx</span><span class=3D"p">)</span> <span class=3D"p">{</span><=
+/ins><ins class=3D"line">  <span class=3D"kt">int</span> <span class=3D"n">=
+cur_rx</span> <span class=3D"o">=3D</span> <span class=3D"mi">0</span><span=
+ class=3D"p">;</span></ins><ins class=3D"line">  <span class=3D"kt">int</sp=
+an> <span class=3D"n">cx</span><span class=3D"p">;</span></ins><ins class=
+=3D"line">  <span class=3D"k">for</span> <span class=3D"p">(</span><span cl=
+ass=3D"n">cx</span> <span class=3D"o">=3D</span> <span class=3D"mi">0</span=
+><span class=3D"p">;</span> <span class=3D"n">cx</span> <span class=3D"o">&=
+lt;</span> <span class=3D"n">row</span><span class=3D"o">-&gt;</span><span =
+class=3D"n">size</span><span class=3D"p">;</span> <span class=3D"n">cx</spa=
+n><span class=3D"o">++</span><span class=3D"p">)</span> <span class=3D"p">{=
+</span></ins><ins class=3D"line">    <span class=3D"k">if</span> <span clas=
+s=3D"p">(</span><span class=3D"n">row</span><span class=3D"o">-&gt;</span><=
+span class=3D"n">chars</span><span class=3D"p">[</span><span class=3D"n">cx=
+</span><span class=3D"p">]</span> <span class=3D"o">=3D=3D</span> <span cla=
+ss=3D"sc">'\t'</span><span class=3D"p">)</span></ins><ins class=3D"line">  =
+    <span class=3D"n">cur_rx</span> <span class=3D"o">+=3D</span> <span cla=
+ss=3D"p">(</span><span class=3D"n">KILO_TAB_STOP</span> <span class=3D"o">-=
+</span> <span class=3D"mi">1</span><span class=3D"p">)</span> <span class=
+=3D"o">-</span> <span class=3D"p">(</span><span class=3D"n">cur_rx</span> <=
+span class=3D"o">%</span> <span class=3D"n">KILO_TAB_STOP</span><span class=
+=3D"p">);</span></ins><ins class=3D"line">    <span class=3D"n">cur_rx</spa=
+n><span class=3D"o">++</span><span class=3D"p">;</span></ins><ins class=3D"=
+line"></ins><ins class=3D"line">    <span class=3D"k">if</span> <span class=
+=3D"p">(</span><span class=3D"n">cur_rx</span> <span class=3D"o">&gt;</span=
+> <span class=3D"n">rx</span><span class=3D"p">)</span> <span class=3D"k">r=
+eturn</span> <span class=3D"n">cx</span><span class=3D"p">;</span></ins><in=
+s class=3D"line">  <span class=3D"p">}</span></ins><ins class=3D"line">  <s=
+pan class=3D"k">return</span> <span class=3D"n">cx</span><span class=3D"p">=
+;</span></ins><ins class=3D"line"><span class=3D"p">}</span></ins><div clas=
+s=3D"line"></div><div class=3D"line folded"><span class=3D"kt">void</span> =
+<span class=3D"nf">editorUpdateRow</span><span class=3D"p">(</span><span cl=
+ass=3D"n">erow</span> <span class=3D"o">*</span><span class=3D"n">row</span=
+><span class=3D"p">)</span> <span class=3D"p">{</span> =E2=80=A6 <span clas=
+s=3D"p">}</span></div><div class=3D"line"></div><div class=3D"line folded">=
+<span class=3D"kt">void</span> <span class=3D"nf">editorInsertRow</span><sp=
+an class=3D"p">(</span><span class=3D"kt">int</span> <span class=3D"n">at</=
+span><span class=3D"p">,</span> <span class=3D"kt">char</span> <span class=
+=3D"o">*</span><span class=3D"n">s</span><span class=3D"p">,</span> <span c=
+lass=3D"kt">size_t</span> <span class=3D"n">len</span><span class=3D"p">)</=
+span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div>=
+<div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">voi=
+d</span> <span class=3D"nf">editorFreeRow</span><span class=3D"p">(</span><=
+span class=3D"n">erow</span> <span class=3D"o">*</span><span class=3D"n">ro=
+w</span><span class=3D"p">)</span> <span class=3D"p">{</span> =E2=80=A6 <sp=
+an class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"line f=
+olded"><span class=3D"kt">void</span> <span class=3D"nf">editorDelRow</span=
+><span class=3D"p">(</span><span class=3D"kt">int</span> <span class=3D"n">=
+at</span><span class=3D"p">)</span> <span class=3D"p">{</span> =E2=80=A6 <s=
+pan class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"line =
+folded"><span class=3D"kt">void</span> <span class=3D"nf">editorRowInsertCh=
+ar</span><span class=3D"p">(</span><span class=3D"n">erow</span> <span clas=
+s=3D"o">*</span><span class=3D"n">row</span><span class=3D"p">,</span> <spa=
+n class=3D"kt">int</span> <span class=3D"n">at</span><span class=3D"p">,</s=
+pan> <span class=3D"kt">int</span> <span class=3D"n">c</span><span class=3D=
+"p">)</span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span=
+></div><div class=3D"line"></div><div class=3D"line folded"><span class=3D"=
+kt">void</span> <span class=3D"nf">editorRowAppendString</span><span class=
+=3D"p">(</span><span class=3D"n">erow</span> <span class=3D"o">*</span><spa=
+n class=3D"n">row</span><span class=3D"p">,</span> <span class=3D"kt">char<=
+/span> <span class=3D"o">*</span><span class=3D"n">s</span><span class=3D"p=
+">,</span> <span class=3D"kt">size_t</span> <span class=3D"n">len</span><sp=
+an class=3D"p">)</span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D=
+"p">}</span></div><div class=3D"line"></div><div class=3D"line folded"><spa=
+n class=3D"kt">void</span> <span class=3D"nf">editorRowDelChar</span><span =
+class=3D"p">(</span><span class=3D"n">erow</span> <span class=3D"o">*</span=
+><span class=3D"n">row</span><span class=3D"p">,</span> <span class=3D"kt">=
+int</span> <span class=3D"n">at</span><span class=3D"p">)</span> <span clas=
+s=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><div class=3D"li=
+ne"></div><div class=3D"line folded"><span class=3D"cm">/*** editor operati=
+ons ***/</span></div><div class=3D"line folded"><span class=3D"cm">/*** fil=
+e i/o ***/</span></div><div class=3D"line folded"><span class=3D"cm">/*** f=
+ind ***/</span></div><div class=3D"line folded"><span class=3D"cm">/*** app=
+end buffer ***/</span></div><div class=3D"line folded"><span class=3D"cm">/=
+*** output ***/</span></div><div class=3D"line folded"><span class=3D"cm">/=
+*** input ***/</span></div><div class=3D"line folded"><span class=3D"cm">/*=
+** init ***/</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c1">=E2=99=8E=EF=B8=8E compiles, but with no obser=
+vable effects</div>
+</div>
+</div>
+
+
+<p>To convert an <code>rx</code> into a <code>cx</code>, we do pretty much =
+the same thing when
+converting the other way: loop through the <code>chars</code> string, calcu=
+lating the
+current <code>rx</code> value (<code>cur_rx</code>) as we go. But instead o=
+f stopping when we hit a
+particular <code>cx</code> value and returning <code>cur_rx</code>, we want=
+ to stop when <code>cur_rx</code>
+hits the given <code>rx</code> value and return <code>cx</code>.</p>
+
+<p>The <code>return</code> statement at the very end is just in case the ca=
+ller provided an
+<code>rx</code> that=E2=80=99s out of range, which shouldn=E2=80=99t happen=
+. The <code>return</code> statement inside
+the <code>for</code> loop should handle all <code>rx</code> values that are=
+ valid indexes into
+<code>render</code>.</p>
+
+<p>Now let=E2=80=99s call <code>editorRowRxToCx()</code> to convert the mat=
+ched index to a <code>chars</code>
+index and assign that to <code>E.cx</code>.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/use-rx-to-cx/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 133</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/use-rx-to-cx">use-rx-to-cx</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line folded"><span clas=
+s=3D"cm">/*** prototypes ***/</span></div><div class=3D"line folded"><span =
+class=3D"cm">/*** terminal ***/</span></div><div class=3D"line folded"><spa=
+n class=3D"cm">/*** row operations ***/</span></div><div class=3D"line fold=
+ed"><span class=3D"cm">/*** editor operations ***/</span></div><div class=
+=3D"line folded"><span class=3D"cm">/*** file i/o ***/</span></div><div cla=
+ss=3D"line"><span class=3D"cm">/*** find ***/</span></div><div class=3D"lin=
+e"></div><div class=3D"line"><span class=3D"kt">void</span> <span class=3D"=
+nf">editorFind</span><span class=3D"p">()</span> <span class=3D"p">{</span>=
+</div><div class=3D"line">  <span class=3D"kt">char</span> <span class=3D"o=
+">*</span><span class=3D"n">query</span> <span class=3D"o">=3D</span> <span=
+ class=3D"n">editorPrompt</span><span class=3D"p">(</span><span class=3D"s"=
+>"Search: %s (ESC to cancel)"</span><span class=3D"p">);</span></div><div c=
+lass=3D"line">  <span class=3D"k">if</span> <span class=3D"p">(</span><span=
+ class=3D"n">query</span> <span class=3D"o">=3D=3D</span> <span class=3D"nb=
+">NULL</span><span class=3D"p">)</span> <span class=3D"k">return</span><spa=
+n class=3D"p">;</span></div><div class=3D"line"></div><div class=3D"line"> =
+ <span class=3D"kt">int</span> <span class=3D"n">i</span><span class=3D"p">=
+;</span></div><div class=3D"line">  <span class=3D"k">for</span> <span clas=
+s=3D"p">(</span><span class=3D"n">i</span> <span class=3D"o">=3D</span> <sp=
+an class=3D"mi">0</span><span class=3D"p">;</span> <span class=3D"n">i</spa=
+n> <span class=3D"o">&lt;</span> <span class=3D"n">E</span><span class=3D"p=
+">.</span><span class=3D"n">numrows</span><span class=3D"p">;</span> <span =
+class=3D"n">i</span><span class=3D"o">++</span><span class=3D"p">)</span> <=
+span class=3D"p">{</span></div><div class=3D"line">    <span class=3D"n">er=
+ow</span> <span class=3D"o">*</span><span class=3D"n">row</span> <span clas=
+s=3D"o">=3D</span> <span class=3D"o">&amp;</span><span class=3D"n">E</span>=
+<span class=3D"p">.</span><span class=3D"n">row</span><span class=3D"p">[</=
+span><span class=3D"n">i</span><span class=3D"p">];</span></div><div class=
+=3D"line">    <span class=3D"kt">char</span> <span class=3D"o">*</span><spa=
+n class=3D"n">match</span> <span class=3D"o">=3D</span> <span class=3D"n">s=
+trstr</span><span class=3D"p">(</span><span class=3D"n">row</span><span cla=
+ss=3D"o">-&gt;</span><span class=3D"n">render</span><span class=3D"p">,</sp=
+an> <span class=3D"n">query</span><span class=3D"p">);</span></div><div cla=
+ss=3D"line">    <span class=3D"k">if</span> <span class=3D"p">(</span><span=
+ class=3D"n">match</span><span class=3D"p">)</span> <span class=3D"p">{</sp=
+an></div><div class=3D"line">      <span class=3D"n">E</span><span class=3D=
+"p">.</span><span class=3D"n">cy</span> <span class=3D"o">=3D</span> <span =
+class=3D"n">i</span><span class=3D"p">;</span></div><ins class=3D"line">   =
+   <span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">cx=
+</span> <span class=3D"o">=3D</span> <span class=3D"n">editorRowRxToCx</spa=
+n><span class=3D"p">(</span><span class=3D"n">row</span><span class=3D"p">,=
+</span> <span class=3D"n">match</span> <span class=3D"o">-</span> <span cla=
+ss=3D"n">row</span><span class=3D"o">-&gt;</span><span class=3D"n">render</=
+span><span class=3D"p">);</span></ins><div class=3D"line">      <span class=
+=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">rowoff</span> <s=
+pan class=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</s=
+pan><span class=3D"n">numrows</span><span class=3D"p">;</span></div><div cl=
+ass=3D"line">      <span class=3D"k">break</span><span class=3D"p">;</span>=
+</div><div class=3D"line">    <span class=3D"p">}</span></div><div class=3D=
+"line">  <span class=3D"p">}</span></div><div class=3D"line"></div><div cla=
+ss=3D"line">  <span class=3D"n">free</span><span class=3D"p">(</span><span =
+class=3D"n">query</span><span class=3D"p">);</span></div><div class=3D"line=
+"><span class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"l=
+ine folded"><span class=3D"cm">/*** append buffer ***/</span></div><div cla=
+ss=3D"line folded"><span class=3D"cm">/*** output ***/</span></div><div cla=
+ss=3D"line folded"><span class=3D"cm">/*** input ***/</span></div><div clas=
+s=3D"line folded"><span class=3D"cm">/*** init ***/</span></div></code></pr=
+e>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c1">=E2=99=8E=EF=B8=8E compiles, but with no obser=
+vable effects</div>
+</div>
+</div>
+
+
+<p>Finally, let=E2=80=99s map <kbd>Ctrl-F</kbd> to the <code>editorFind()</=
+code> function, and add it
+to the help message we set in <code>main()</code>.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/ctrl-f/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 134</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/ctrl-f">ctrl-f</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line folded"><span clas=
+s=3D"cm">/*** prototypes ***/</span></div><div class=3D"line folded"><span =
+class=3D"cm">/*** terminal ***/</span></div><div class=3D"line folded"><spa=
+n class=3D"cm">/*** row operations ***/</span></div><div class=3D"line fold=
+ed"><span class=3D"cm">/*** editor operations ***/</span></div><div class=
+=3D"line folded"><span class=3D"cm">/*** file i/o ***/</span></div><div cla=
+ss=3D"line folded"><span class=3D"cm">/*** find ***/</span></div><div class=
+=3D"line folded"><span class=3D"cm">/*** append buffer ***/</span></div><di=
+v class=3D"line folded"><span class=3D"cm">/*** output ***/</span></div><di=
+v class=3D"line"><span class=3D"cm">/*** input ***/</span></div><div class=
+=3D"line"></div><div class=3D"line folded"><span class=3D"kt">char</span> <=
+span class=3D"o">*</span><span class=3D"nf">editorPrompt</span><span class=
+=3D"p">(</span><span class=3D"kt">char</span> <span class=3D"o">*</span><sp=
+an class=3D"n">prompt</span><span class=3D"p">)</span> <span class=3D"p">{<=
+/span> =E2=80=A6 <span class=3D"p">}</span></div><div class=3D"line"></div>=
+<div class=3D"line folded"><span class=3D"kt">void</span> <span class=3D"nf=
+">editorMoveCursor</span><span class=3D"p">(</span><span class=3D"kt">int</=
+span> <span class=3D"n">key</span><span class=3D"p">)</span> <span class=3D=
+"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><div class=3D"line">=
+</div><div class=3D"line"><span class=3D"kt">void</span> <span class=3D"nf"=
+>editorProcessKeypress</span><span class=3D"p">()</span> <span class=3D"p">=
+{</span></div><div class=3D"line">  <span class=3D"k">static</span> <span c=
+lass=3D"kt">int</span> <span class=3D"n">quit_times</span> <span class=3D"o=
+">=3D</span> <span class=3D"n">KILO_QUIT_TIMES</span><span class=3D"p">;</s=
+pan></div><div class=3D"line"></div><div class=3D"line">  <span class=3D"kt=
+">int</span> <span class=3D"n">c</span> <span class=3D"o">=3D</span> <span =
+class=3D"n">editorReadKey</span><span class=3D"p">();</span></div><div clas=
+s=3D"line"></div><div class=3D"line">  <span class=3D"k">switch</span> <spa=
+n class=3D"p">(</span><span class=3D"n">c</span><span class=3D"p">)</span> =
+<span class=3D"p">{</span></div><div class=3D"line">    <span class=3D"k">c=
+ase</span> <span class=3D"sc">'\r'</span><span class=3D"p">:</span></div><d=
+iv class=3D"line">      <span class=3D"n">editorInsertNewline</span><span c=
+lass=3D"p">();</span></div><div class=3D"line">      <span class=3D"k">brea=
+k</span><span class=3D"p">;</span></div><div class=3D"line"></div><div clas=
+s=3D"line">    <span class=3D"k">case</span> <span class=3D"n">CTRL_KEY</sp=
+an><span class=3D"p">(</span><span class=3D"sc">'q'</span><span class=3D"p"=
+>):</span></div><div class=3D"line">      <span class=3D"k">if</span> <span=
+ class=3D"p">(</span><span class=3D"n">E</span><span class=3D"p">.</span><s=
+pan class=3D"n">dirty</span> <span class=3D"o">&amp;&amp;</span> <span clas=
+s=3D"n">quit_times</span> <span class=3D"o">&gt;</span> <span class=3D"mi">=
+0</span><span class=3D"p">)</span> <span class=3D"p">{</span></div><div cla=
+ss=3D"line">        <span class=3D"n">editorSetStatusMessage</span><span cl=
+ass=3D"p">(</span><span class=3D"s">"WARNING!!! File has unsaved changes. "=
+</span></div><div class=3D"line">          <span class=3D"s">"Press Ctrl-Q =
+%d more times to quit."</span><span class=3D"p">,</span> <span class=3D"n">=
+quit_times</span><span class=3D"p">);</span></div><div class=3D"line">     =
+   <span class=3D"n">quit_times</span><span class=3D"o">--</span><span clas=
+s=3D"p">;</span></div><div class=3D"line">        <span class=3D"k">return<=
+/span><span class=3D"p">;</span></div><div class=3D"line">      <span class=
+=3D"p">}</span></div><div class=3D"line">      <span class=3D"n">write</spa=
+n><span class=3D"p">(</span><span class=3D"n">STDOUT_FILENO</span><span cla=
+ss=3D"p">,</span> <span class=3D"s">"</span><span class=3D"se">\x1b</span><=
+span class=3D"s">[2J"</span><span class=3D"p">,</span> <span class=3D"mi">4=
+</span><span class=3D"p">);</span></div><div class=3D"line">      <span cla=
+ss=3D"n">write</span><span class=3D"p">(</span><span class=3D"n">STDOUT_FIL=
+ENO</span><span class=3D"p">,</span> <span class=3D"s">"</span><span class=
+=3D"se">\x1b</span><span class=3D"s">[H"</span><span class=3D"p">,</span> <=
+span class=3D"mi">3</span><span class=3D"p">);</span></div><div class=3D"li=
+ne">      <span class=3D"n">exit</span><span class=3D"p">(</span><span clas=
+s=3D"mi">0</span><span class=3D"p">);</span></div><div class=3D"line">     =
+ <span class=3D"k">break</span><span class=3D"p">;</span></div><div class=
+=3D"line"></div><div class=3D"line">    <span class=3D"k">case</span> <span=
+ class=3D"n">CTRL_KEY</span><span class=3D"p">(</span><span class=3D"sc">'s=
+'</span><span class=3D"p">):</span></div><div class=3D"line">      <span cl=
+ass=3D"n">editorSave</span><span class=3D"p">();</span></div><div class=3D"=
+line">      <span class=3D"k">break</span><span class=3D"p">;</span></div><=
+div class=3D"line"></div><div class=3D"line">    <span class=3D"k">case</sp=
+an> <span class=3D"n">HOME_KEY</span><span class=3D"p">:</span></div><div c=
+lass=3D"line">      <span class=3D"n">E</span><span class=3D"p">.</span><sp=
+an class=3D"n">cx</span> <span class=3D"o">=3D</span> <span class=3D"mi">0<=
+/span><span class=3D"p">;</span></div><div class=3D"line">      <span class=
+=3D"k">break</span><span class=3D"p">;</span></div><div class=3D"line"></di=
+v><div class=3D"line">    <span class=3D"k">case</span> <span class=3D"n">E=
+ND_KEY</span><span class=3D"p">:</span></div><div class=3D"line">      <spa=
+n class=3D"k">if</span> <span class=3D"p">(</span><span class=3D"n">E</span=
+><span class=3D"p">.</span><span class=3D"n">cy</span> <span class=3D"o">&l=
+t;</span> <span class=3D"n">E</span><span class=3D"p">.</span><span class=
+=3D"n">numrows</span><span class=3D"p">)</span></div><div class=3D"line">  =
+      <span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n"=
+>cx</span> <span class=3D"o">=3D</span> <span class=3D"n">E</span><span cla=
+ss=3D"p">.</span><span class=3D"n">row</span><span class=3D"p">[</span><spa=
+n class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">cy</span>=
+<span class=3D"p">].</span><span class=3D"n">size</span><span class=3D"p">;=
+</span></div><div class=3D"line">      <span class=3D"k">break</span><span =
+class=3D"p">;</span></div><div class=3D"line"></div><ins class=3D"line">   =
+ <span class=3D"k">case</span> <span class=3D"n">CTRL_KEY</span><span class=
+=3D"p">(</span><span class=3D"sc">'f'</span><span class=3D"p">):</span></in=
+s><ins class=3D"line">      <span class=3D"n">editorFind</span><span class=
+=3D"p">();</span></ins><ins class=3D"line">      <span class=3D"k">break</s=
+pan><span class=3D"p">;</span></ins><div class=3D"line"></div><div class=3D=
+"line">    <span class=3D"k">case</span> <span class=3D"n">BACKSPACE</span>=
+<span class=3D"p">:</span></div><div class=3D"line">    <span class=3D"k">c=
+ase</span> <span class=3D"n">CTRL_KEY</span><span class=3D"p">(</span><span=
+ class=3D"sc">'h'</span><span class=3D"p">):</span></div><div class=3D"line=
+">    <span class=3D"k">case</span> <span class=3D"n">DEL_KEY</span><span c=
+lass=3D"p">:</span></div><div class=3D"line">      <span class=3D"k">if</sp=
+an> <span class=3D"p">(</span><span class=3D"n">c</span> <span class=3D"o">=
+=3D=3D</span> <span class=3D"n">DEL_KEY</span><span class=3D"p">)</span> <s=
+pan class=3D"n">editorMoveCursor</span><span class=3D"p">(</span><span clas=
+s=3D"n">ARROW_RIGHT</span><span class=3D"p">);</span></div><div class=3D"li=
+ne">      <span class=3D"n">editorDelChar</span><span class=3D"p">();</span=
+></div><div class=3D"line">      <span class=3D"k">break</span><span class=
+=3D"p">;</span></div><div class=3D"line"></div><div class=3D"line">    <spa=
+n class=3D"k">case</span> <span class=3D"n">PAGE_UP</span><span class=3D"p"=
+>:</span></div><div class=3D"line">    <span class=3D"k">case</span> <span =
+class=3D"n">PAGE_DOWN</span><span class=3D"p">:</span></div><div class=3D"l=
+ine">      <span class=3D"p">{</span></div><div class=3D"line">        <spa=
+n class=3D"k">if</span> <span class=3D"p">(</span><span class=3D"n">c</span=
+> <span class=3D"o">=3D=3D</span> <span class=3D"n">PAGE_UP</span><span cla=
+ss=3D"p">)</span> <span class=3D"p">{</span></div><div class=3D"line">     =
+     <span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">=
+cy</span> <span class=3D"o">=3D</span> <span class=3D"n">E</span><span clas=
+s=3D"p">.</span><span class=3D"n">rowoff</span><span class=3D"p">;</span></=
+div><div class=3D"line">        <span class=3D"p">}</span> <span class=3D"k=
+">else</span> <span class=3D"k">if</span> <span class=3D"p">(</span><span c=
+lass=3D"n">c</span> <span class=3D"o">=3D=3D</span> <span class=3D"n">PAGE_=
+DOWN</span><span class=3D"p">)</span> <span class=3D"p">{</span></div><div =
+class=3D"line">          <span class=3D"n">E</span><span class=3D"p">.</spa=
+n><span class=3D"n">cy</span> <span class=3D"o">=3D</span> <span class=3D"n=
+">E</span><span class=3D"p">.</span><span class=3D"n">rowoff</span> <span c=
+lass=3D"o">+</span> <span class=3D"n">E</span><span class=3D"p">.</span><sp=
+an class=3D"n">screenrows</span> <span class=3D"o">-</span> <span class=3D"=
+mi">1</span><span class=3D"p">;</span></div><div class=3D"line">          <=
+span class=3D"k">if</span> <span class=3D"p">(</span><span class=3D"n">E</s=
+pan><span class=3D"p">.</span><span class=3D"n">cy</span> <span class=3D"o"=
+>&gt;</span> <span class=3D"n">E</span><span class=3D"p">.</span><span clas=
+s=3D"n">numrows</span><span class=3D"p">)</span> <span class=3D"n">E</span>=
+<span class=3D"p">.</span><span class=3D"n">cy</span> <span class=3D"o">=3D=
+</span> <span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"=
+n">numrows</span><span class=3D"p">;</span></div><div class=3D"line">      =
+  <span class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"l=
+ine">        <span class=3D"kt">int</span> <span class=3D"n">times</span> <=
+span class=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</=
+span><span class=3D"n">screenrows</span><span class=3D"p">;</span></div><di=
+v class=3D"line">        <span class=3D"k">while</span> <span class=3D"p">(=
+</span><span class=3D"n">times</span><span class=3D"o">--</span><span class=
+=3D"p">)</span></div><div class=3D"line">          <span class=3D"n">editor=
+MoveCursor</span><span class=3D"p">(</span><span class=3D"n">c</span> <span=
+ class=3D"o">=3D=3D</span> <span class=3D"n">PAGE_UP</span> <span class=3D"=
+o">?</span> <span class=3D"n">ARROW_UP</span> <span class=3D"o">:</span> <s=
+pan class=3D"n">ARROW_DOWN</span><span class=3D"p">);</span></div><div clas=
+s=3D"line">      <span class=3D"p">}</span></div><div class=3D"line">      =
+<span class=3D"k">break</span><span class=3D"p">;</span></div><div class=3D=
+"line"></div><div class=3D"line">    <span class=3D"k">case</span> <span cl=
+ass=3D"n">ARROW_UP</span><span class=3D"p">:</span></div><div class=3D"line=
+">    <span class=3D"k">case</span> <span class=3D"n">ARROW_DOWN</span><spa=
+n class=3D"p">:</span></div><div class=3D"line">    <span class=3D"k">case<=
+/span> <span class=3D"n">ARROW_LEFT</span><span class=3D"p">:</span></div><=
+div class=3D"line">    <span class=3D"k">case</span> <span class=3D"n">ARRO=
+W_RIGHT</span><span class=3D"p">:</span></div><div class=3D"line">      <sp=
+an class=3D"n">editorMoveCursor</span><span class=3D"p">(</span><span class=
+=3D"n">c</span><span class=3D"p">);</span></div><div class=3D"line">      <=
+span class=3D"k">break</span><span class=3D"p">;</span></div><div class=3D"=
+line"></div><div class=3D"line">    <span class=3D"k">case</span> <span cla=
+ss=3D"n">CTRL_KEY</span><span class=3D"p">(</span><span class=3D"sc">'l'</s=
+pan><span class=3D"p">):</span></div><div class=3D"line">    <span class=3D=
+"k">case</span> <span class=3D"sc">'\x1b'</span><span class=3D"p">:</span><=
+/div><div class=3D"line">      <span class=3D"k">break</span><span class=3D=
+"p">;</span></div><div class=3D"line"></div><div class=3D"line">    <span c=
+lass=3D"nl">default:</span></div><div class=3D"line">      <span class=3D"n=
+">editorInsertChar</span><span class=3D"p">(</span><span class=3D"n">c</spa=
+n><span class=3D"p">);</span></div><div class=3D"line">      <span class=3D=
+"k">break</span><span class=3D"p">;</span></div><div class=3D"line">  <span=
+ class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"line">  =
+<span class=3D"n">quit_times</span> <span class=3D"o">=3D</span> <span clas=
+s=3D"n">KILO_QUIT_TIMES</span><span class=3D"p">;</span></div><div class=3D=
+"line"><span class=3D"p">}</span></div><div class=3D"line"></div><div class=
+=3D"line"><span class=3D"cm">/*** init ***/</span></div><div class=3D"line"=
+></div><div class=3D"line folded"><span class=3D"kt">void</span> <span clas=
+s=3D"nf">initEditor</span><span class=3D"p">()</span> <span class=3D"p">{</=
+span> =E2=80=A6 <span class=3D"p">}</span></div><div class=3D"line"></div><=
+div class=3D"line"><span class=3D"kt">int</span> <span class=3D"nf">main</s=
+pan><span class=3D"p">(</span><span class=3D"kt">int</span> <span class=3D"=
+n">argc</span><span class=3D"p">,</span> <span class=3D"kt">char</span> <sp=
+an class=3D"o">*</span><span class=3D"n">argv</span><span class=3D"p">[])</=
+span> <span class=3D"p">{</span></div><div class=3D"line">  <span class=3D"=
+n">enableRawMode</span><span class=3D"p">();</span></div><div class=3D"line=
+">  <span class=3D"n">initEditor</span><span class=3D"p">();</span></div><d=
+iv class=3D"line">  <span class=3D"k">if</span> <span class=3D"p">(</span><=
+span class=3D"n">argc</span> <span class=3D"o">&gt;=3D</span> <span class=
+=3D"mi">2</span><span class=3D"p">)</span> <span class=3D"p">{</span></div>=
+<div class=3D"line">    <span class=3D"n">editorOpen</span><span class=3D"p=
+">(</span><span class=3D"n">argv</span><span class=3D"p">[</span><span clas=
+s=3D"mi">1</span><span class=3D"p">]);</span></div><div class=3D"line">  <s=
+pan class=3D"p">}</span></div><div class=3D"line"></div><ins class=3D"line"=
+>  <span class=3D"n">editorSetStatusMessage</span><span class=3D"p">(</span=
+></ins><ins class=3D"line">    <span class=3D"s">"HELP: Ctrl-S =3D save | C=
+trl-Q =3D quit | Ctrl-F =3D find"</span><span class=3D"p">);</span></ins><d=
+iv class=3D"line"></div><div class=3D"line">  <span class=3D"k">while</span=
+> <span class=3D"p">(</span><span class=3D"mi">1</span><span class=3D"p">)<=
+/span> <span class=3D"p">{</span></div><div class=3D"line">    <span class=
+=3D"n">editorRefreshScreen</span><span class=3D"p">();</span></div><div cla=
+ss=3D"line">    <span class=3D"n">editorProcessKeypress</span><span class=
+=3D"p">();</span></div><div class=3D"line">  <span class=3D"p">}</span></di=
+v><div class=3D"line"></div><div class=3D"line">  <span class=3D"k">return<=
+/span> <span class=3D"mi">0</span><span class=3D"p">;</span></div><div clas=
+s=3D"line"><span class=3D"p">}</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+<h2 id=3D"incremental-search"><a href=3D"https://viewsourcecode.org/snaptok=
+en/kilo/06.search.html#incremental-search">Incremental search</a></h2>
+
+<p>Now, let=E2=80=99s make our search feature fancy. We want to support inc=
+remental
+search, meaning the file is searched after each keypress when the user is
+typing in their search query.</p>
+
+<p>To implement this, we=E2=80=99re going to get <code>editorPrompt()</code=
+> to take a callback
+function as an argument. We=E2=80=99ll have it call this function after eac=
+h keypress,
+passing the current search query inputted by the user and the last key they
+pressed.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/prompt-callback/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 135</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/prompt-callback">prompt-callback</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line"><span class=3D"cm=
+">/*** prototypes ***/</span></div><div class=3D"line"></div><div class=3D"=
+line"><span class=3D"kt">void</span> <span class=3D"n">editorSetStatusMessa=
+ge</span><span class=3D"p">(</span><span class=3D"k">const</span> <span cla=
+ss=3D"kt">char</span> <span class=3D"o">*</span><span class=3D"n">fmt</span=
+><span class=3D"p">,</span> <span class=3D"p">...);</span></div><div class=
+=3D"line"><span class=3D"kt">void</span> <span class=3D"n">editorRefreshScr=
+een</span><span class=3D"p">();</span></div><ins class=3D"line"><span class=
+=3D"kt">char</span> <span class=3D"o">*</span><span class=3D"n">editorPromp=
+t</span><span class=3D"p">(</span><span class=3D"kt">char</span> <span clas=
+s=3D"o">*</span><span class=3D"n">prompt</span><span class=3D"p">,</span> <=
+span class=3D"kt">void</span> <span class=3D"p">(</span><span class=3D"o">*=
+</span><span class=3D"n">callback</span><span class=3D"p">)(</span><span cl=
+ass=3D"kt">char</span> <span class=3D"o">*</span><span class=3D"p">,</span>=
+ <span class=3D"kt">int</span><span class=3D"p">));</span></ins><div class=
+=3D"line"></div><div class=3D"line folded"><span class=3D"cm">/*** terminal=
+ ***/</span></div><div class=3D"line folded"><span class=3D"cm">/*** row op=
+erations ***/</span></div><div class=3D"line folded"><span class=3D"cm">/**=
+* editor operations ***/</span></div><div class=3D"line folded"><span class=
+=3D"cm">/*** file i/o ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** find ***/</span></div><div class=3D"line folded"><span class=
+=3D"cm">/*** append buffer ***/</span></div><div class=3D"line folded"><spa=
+n class=3D"cm">/*** output ***/</span></div><div class=3D"line"><span class=
+=3D"cm">/*** input ***/</span></div><div class=3D"line"></div><ins class=3D=
+"line"><span class=3D"kt">char</span> <span class=3D"o">*</span><span class=
+=3D"n">editorPrompt</span><span class=3D"p">(</span><span class=3D"kt">char=
+</span> <span class=3D"o">*</span><span class=3D"n">prompt</span><span clas=
+s=3D"p">,</span> <span class=3D"kt">void</span> <span class=3D"p">(</span><=
+span class=3D"o">*</span><span class=3D"n">callback</span><span class=3D"p"=
+>)(</span><span class=3D"kt">char</span> <span class=3D"o">*</span><span cl=
+ass=3D"p">,</span> <span class=3D"kt">int</span><span class=3D"p">))</span>=
+ <span class=3D"p">{</span></ins><div class=3D"line">  <span class=3D"kt">s=
+ize_t</span> <span class=3D"n">bufsize</span> <span class=3D"o">=3D</span> =
+<span class=3D"mi">128</span><span class=3D"p">;</span></div><div class=3D"=
+line">  <span class=3D"kt">char</span> <span class=3D"o">*</span><span clas=
+s=3D"n">buf</span> <span class=3D"o">=3D</span> <span class=3D"n">malloc</s=
+pan><span class=3D"p">(</span><span class=3D"n">bufsize</span><span class=
+=3D"p">);</span></div><div class=3D"line"></div><div class=3D"line">  <span=
+ class=3D"kt">size_t</span> <span class=3D"n">buflen</span> <span class=3D"=
+o">=3D</span> <span class=3D"mi">0</span><span class=3D"p">;</span></div><d=
+iv class=3D"line">  <span class=3D"n">buf</span><span class=3D"p">[</span><=
+span class=3D"mi">0</span><span class=3D"p">]</span> <span class=3D"o">=3D<=
+/span> <span class=3D"sc">'\0'</span><span class=3D"p">;</span></div><div c=
+lass=3D"line"></div><div class=3D"line">  <span class=3D"k">while</span> <s=
+pan class=3D"p">(</span><span class=3D"mi">1</span><span class=3D"p">)</spa=
+n> <span class=3D"p">{</span></div><div class=3D"line">    <span class=3D"n=
+">editorSetStatusMessage</span><span class=3D"p">(</span><span class=3D"n">=
+prompt</span><span class=3D"p">,</span> <span class=3D"n">buf</span><span c=
+lass=3D"p">);</span></div><div class=3D"line">    <span class=3D"n">editorR=
+efreshScreen</span><span class=3D"p">();</span></div><div class=3D"line"></=
+div><div class=3D"line">    <span class=3D"kt">int</span> <span class=3D"n"=
+>c</span> <span class=3D"o">=3D</span> <span class=3D"n">editorReadKey</spa=
+n><span class=3D"p">();</span></div><div class=3D"line">    <span class=3D"=
+k">if</span> <span class=3D"p">(</span><span class=3D"n">c</span> <span cla=
+ss=3D"o">=3D=3D</span> <span class=3D"n">DEL_KEY</span> <span class=3D"o">|=
+|</span> <span class=3D"n">c</span> <span class=3D"o">=3D=3D</span> <span c=
+lass=3D"n">CTRL_KEY</span><span class=3D"p">(</span><span class=3D"sc">'h'<=
+/span><span class=3D"p">)</span> <span class=3D"o">||</span> <span class=3D=
+"n">c</span> <span class=3D"o">=3D=3D</span> <span class=3D"n">BACKSPACE</s=
+pan><span class=3D"p">)</span> <span class=3D"p">{</span></div><div class=
+=3D"line">      <span class=3D"k">if</span> <span class=3D"p">(</span><span=
+ class=3D"n">buflen</span> <span class=3D"o">!=3D</span> <span class=3D"mi"=
+>0</span><span class=3D"p">)</span> <span class=3D"n">buf</span><span class=
+=3D"p">[</span><span class=3D"o">--</span><span class=3D"n">buflen</span><s=
+pan class=3D"p">]</span> <span class=3D"o">=3D</span> <span class=3D"sc">'\=
+0'</span><span class=3D"p">;</span></div><div class=3D"line">    <span clas=
+s=3D"p">}</span> <span class=3D"k">else</span> <span class=3D"k">if</span> =
+<span class=3D"p">(</span><span class=3D"n">c</span> <span class=3D"o">=3D=
+=3D</span> <span class=3D"sc">'\x1b'</span><span class=3D"p">)</span> <span=
+ class=3D"p">{</span></div><div class=3D"line">      <span class=3D"n">edit=
+orSetStatusMessage</span><span class=3D"p">(</span><span class=3D"s">""</sp=
+an><span class=3D"p">);</span></div><ins class=3D"line">      <span class=
+=3D"k">if</span> <span class=3D"p">(</span><span class=3D"n">callback</span=
+><span class=3D"p">)</span> <span class=3D"n">callback</span><span class=3D=
+"p">(</span><span class=3D"n">buf</span><span class=3D"p">,</span> <span cl=
+ass=3D"n">c</span><span class=3D"p">);</span></ins><div class=3D"line">    =
+  <span class=3D"n">free</span><span class=3D"p">(</span><span class=3D"n">=
+buf</span><span class=3D"p">);</span></div><div class=3D"line">      <span =
+class=3D"k">return</span> <span class=3D"nb">NULL</span><span class=3D"p">;=
+</span></div><div class=3D"line">    <span class=3D"p">}</span> <span class=
+=3D"k">else</span> <span class=3D"k">if</span> <span class=3D"p">(</span><s=
+pan class=3D"n">c</span> <span class=3D"o">=3D=3D</span> <span class=3D"sc"=
+>'\r'</span><span class=3D"p">)</span> <span class=3D"p">{</span></div><div=
+ class=3D"line">      <span class=3D"k">if</span> <span class=3D"p">(</span=
+><span class=3D"n">buflen</span> <span class=3D"o">!=3D</span> <span class=
+=3D"mi">0</span><span class=3D"p">)</span> <span class=3D"p">{</span></div>=
+<div class=3D"line">        <span class=3D"n">editorSetStatusMessage</span>=
+<span class=3D"p">(</span><span class=3D"s">""</span><span class=3D"p">);</=
+span></div><ins class=3D"line">        <span class=3D"k">if</span> <span cl=
+ass=3D"p">(</span><span class=3D"n">callback</span><span class=3D"p">)</spa=
+n> <span class=3D"n">callback</span><span class=3D"p">(</span><span class=
+=3D"n">buf</span><span class=3D"p">,</span> <span class=3D"n">c</span><span=
+ class=3D"p">);</span></ins><div class=3D"line">        <span class=3D"k">r=
+eturn</span> <span class=3D"n">buf</span><span class=3D"p">;</span></div><d=
+iv class=3D"line">      <span class=3D"p">}</span></div><div class=3D"line"=
+>    <span class=3D"p">}</span> <span class=3D"k">else</span> <span class=
+=3D"k">if</span> <span class=3D"p">(</span><span class=3D"o">!</span><span =
+class=3D"n">iscntrl</span><span class=3D"p">(</span><span class=3D"n">c</sp=
+an><span class=3D"p">)</span> <span class=3D"o">&amp;&amp;</span> <span cla=
+ss=3D"n">c</span> <span class=3D"o">&lt;</span> <span class=3D"mi">128</spa=
+n><span class=3D"p">)</span> <span class=3D"p">{</span></div><div class=3D"=
+line">      <span class=3D"k">if</span> <span class=3D"p">(</span><span cla=
+ss=3D"n">buflen</span> <span class=3D"o">=3D=3D</span> <span class=3D"n">bu=
+fsize</span> <span class=3D"o">-</span> <span class=3D"mi">1</span><span cl=
+ass=3D"p">)</span> <span class=3D"p">{</span></div><div class=3D"line">    =
+    <span class=3D"n">bufsize</span> <span class=3D"o">*=3D</span> <span cl=
+ass=3D"mi">2</span><span class=3D"p">;</span></div><div class=3D"line">    =
+    <span class=3D"n">buf</span> <span class=3D"o">=3D</span> <span class=
+=3D"n">realloc</span><span class=3D"p">(</span><span class=3D"n">buf</span>=
+<span class=3D"p">,</span> <span class=3D"n">bufsize</span><span class=3D"p=
+">);</span></div><div class=3D"line">      <span class=3D"p">}</span></div>=
+<div class=3D"line">      <span class=3D"n">buf</span><span class=3D"p">[</=
+span><span class=3D"n">buflen</span><span class=3D"o">++</span><span class=
+=3D"p">]</span> <span class=3D"o">=3D</span> <span class=3D"n">c</span><spa=
+n class=3D"p">;</span></div><div class=3D"line">      <span class=3D"n">buf=
+</span><span class=3D"p">[</span><span class=3D"n">buflen</span><span class=
+=3D"p">]</span> <span class=3D"o">=3D</span> <span class=3D"sc">'\0'</span>=
+<span class=3D"p">;</span></div><div class=3D"line">    <span class=3D"p">}=
+</span></div><div class=3D"line"></div><ins class=3D"line">    <span class=
+=3D"k">if</span> <span class=3D"p">(</span><span class=3D"n">callback</span=
+><span class=3D"p">)</span> <span class=3D"n">callback</span><span class=3D=
+"p">(</span><span class=3D"n">buf</span><span class=3D"p">,</span> <span cl=
+ass=3D"n">c</span><span class=3D"p">);</span></ins><div class=3D"line">  <s=
+pan class=3D"p">}</span></div><div class=3D"line"><span class=3D"p">}</span=
+></div><div class=3D"line"></div><div class=3D"line folded"><span class=3D"=
+kt">void</span> <span class=3D"n">editorMoveCursor</span><span class=3D"p">=
+(</span><span class=3D"kt">int</span> <span class=3D"n">key</span><span cla=
+ss=3D"p">)</span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}<=
+/span></div><div class=3D"line"></div><div class=3D"line folded"><span clas=
+s=3D"kt">void</span> <span class=3D"n">editorProcessKeypress</span><span cl=
+ass=3D"p">()</span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">=
+}</span></div><div class=3D"line"></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** init ***/</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c0">=E2=99=8F=EF=B8=8E doesn=E2=80=99t compile</di=
+v>
+</div>
+</div>
+
+
+<p>The <code>if</code> statements allow the caller to pass <code>NULL</code=
+> for the callback, in case
+they don=E2=80=99t want to use a callback. This is the case when we prompt =
+the user
+for a filename, so let=E2=80=99s pass <code>NULL</code> to <code>editorProm=
+pt()</code> when we do that. We=E2=80=99ll
+also pass <code>NULL</code> to <code>editorPrompt()</code> in <code>editorF=
+ind()</code> for now, to get the code
+to compile.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/null-callback/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 136</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/null-callback">null-callback</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line folded"><span clas=
+s=3D"cm">/*** prototypes ***/</span></div><div class=3D"line folded"><span =
+class=3D"cm">/*** terminal ***/</span></div><div class=3D"line folded"><spa=
+n class=3D"cm">/*** row operations ***/</span></div><div class=3D"line fold=
+ed"><span class=3D"cm">/*** editor operations ***/</span></div><div class=
+=3D"line"><span class=3D"cm">/*** file i/o ***/</span></div><div class=3D"l=
+ine"></div><div class=3D"line folded"><span class=3D"kt">char</span> <span =
+class=3D"o">*</span><span class=3D"nf">editorRowsToString</span><span class=
+=3D"p">(</span><span class=3D"kt">int</span> <span class=3D"o">*</span><spa=
+n class=3D"n">buflen</span><span class=3D"p">)</span> <span class=3D"p">{</=
+span> =E2=80=A6 <span class=3D"p">}</span></div><div class=3D"line"></div><=
+div class=3D"line folded"><span class=3D"kt">void</span> <span class=3D"nf"=
+>editorOpen</span><span class=3D"p">(</span><span class=3D"kt">char</span> =
+<span class=3D"o">*</span><span class=3D"n">filename</span><span class=3D"p=
+">)</span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span><=
+/div><div class=3D"line"></div><div class=3D"line"><span class=3D"kt">void<=
+/span> <span class=3D"nf">editorSave</span><span class=3D"p">()</span> <spa=
+n class=3D"p">{</span></div><div class=3D"line">  <span class=3D"k">if</spa=
+n> <span class=3D"p">(</span><span class=3D"n">E</span><span class=3D"p">.<=
+/span><span class=3D"n">filename</span> <span class=3D"o">=3D=3D</span> <sp=
+an class=3D"nb">NULL</span><span class=3D"p">)</span> <span class=3D"p">{</=
+span></div><ins class=3D"line">    <span class=3D"n">E</span><span class=3D=
+"p">.</span><span class=3D"n">filename</span> <span class=3D"o">=3D</span> =
+<span class=3D"n">editorPrompt</span><span class=3D"p">(</span><span class=
+=3D"s">"Save as: %s (ESC to cancel)"</span><span class=3D"p">,</span> <span=
+ class=3D"nb">NULL</span><span class=3D"p">);</span></ins><div class=3D"lin=
+e">    <span class=3D"k">if</span> <span class=3D"p">(</span><span class=3D=
+"n">E</span><span class=3D"p">.</span><span class=3D"n">filename</span> <sp=
+an class=3D"o">=3D=3D</span> <span class=3D"nb">NULL</span><span class=3D"p=
+">)</span> <span class=3D"p">{</span></div><div class=3D"line">      <span =
+class=3D"n">editorSetStatusMessage</span><span class=3D"p">(</span><span cl=
+ass=3D"s">"Save aborted"</span><span class=3D"p">);</span></div><div class=
+=3D"line">      <span class=3D"k">return</span><span class=3D"p">;</span></=
+div><div class=3D"line">    <span class=3D"p">}</span></div><div class=3D"l=
+ine">  <span class=3D"p">}</span></div><div class=3D"line"></div><div class=
+=3D"line">  <span class=3D"kt">int</span> <span class=3D"n">len</span><span=
+ class=3D"p">;</span></div><div class=3D"line">  <span class=3D"kt">char</s=
+pan> <span class=3D"o">*</span><span class=3D"n">buf</span> <span class=3D"=
+o">=3D</span> <span class=3D"n">editorRowsToString</span><span class=3D"p">=
+(</span><span class=3D"o">&amp;</span><span class=3D"n">len</span><span cla=
+ss=3D"p">);</span></div><div class=3D"line"></div><div class=3D"line">  <sp=
+an class=3D"kt">int</span> <span class=3D"n">fd</span> <span class=3D"o">=
+=3D</span> <span class=3D"n">open</span><span class=3D"p">(</span><span cla=
+ss=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">filename</span=
+><span class=3D"p">,</span> <span class=3D"n">O_RDWR</span> <span class=3D"=
+o">|</span> <span class=3D"n">O_CREAT</span><span class=3D"p">,</span> <spa=
+n class=3D"mo">0644</span><span class=3D"p">);</span></div><div class=3D"li=
+ne">  <span class=3D"k">if</span> <span class=3D"p">(</span><span class=3D"=
+n">fd</span> <span class=3D"o">!=3D</span> <span class=3D"o">-</span><span =
+class=3D"mi">1</span><span class=3D"p">)</span> <span class=3D"p">{</span><=
+/div><div class=3D"line">    <span class=3D"k">if</span> <span class=3D"p">=
+(</span><span class=3D"n">ftruncate</span><span class=3D"p">(</span><span c=
+lass=3D"n">fd</span><span class=3D"p">,</span> <span class=3D"n">len</span>=
+<span class=3D"p">)</span> <span class=3D"o">!=3D</span> <span class=3D"o">=
+-</span><span class=3D"mi">1</span><span class=3D"p">)</span> <span class=
+=3D"p">{</span></div><div class=3D"line">      <span class=3D"k">if</span> =
+<span class=3D"p">(</span><span class=3D"n">write</span><span class=3D"p">(=
+</span><span class=3D"n">fd</span><span class=3D"p">,</span> <span class=3D=
+"n">buf</span><span class=3D"p">,</span> <span class=3D"n">len</span><span =
+class=3D"p">)</span> <span class=3D"o">=3D=3D</span> <span class=3D"n">len<=
+/span><span class=3D"p">)</span> <span class=3D"p">{</span></div><div class=
+=3D"line">        <span class=3D"n">close</span><span class=3D"p">(</span><=
+span class=3D"n">fd</span><span class=3D"p">);</span></div><div class=3D"li=
+ne">        <span class=3D"n">free</span><span class=3D"p">(</span><span cl=
+ass=3D"n">buf</span><span class=3D"p">);</span></div><div class=3D"line">  =
+      <span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n"=
+>dirty</span> <span class=3D"o">=3D</span> <span class=3D"mi">0</span><span=
+ class=3D"p">;</span></div><div class=3D"line">        <span class=3D"n">ed=
+itorSetStatusMessage</span><span class=3D"p">(</span><span class=3D"s">"%d =
+bytes written to disk"</span><span class=3D"p">,</span> <span class=3D"n">l=
+en</span><span class=3D"p">);</span></div><div class=3D"line">        <span=
+ class=3D"k">return</span><span class=3D"p">;</span></div><div class=3D"lin=
+e">      <span class=3D"p">}</span></div><div class=3D"line">    <span clas=
+s=3D"p">}</span></div><div class=3D"line">    <span class=3D"n">close</span=
+><span class=3D"p">(</span><span class=3D"n">fd</span><span class=3D"p">);<=
+/span></div><div class=3D"line">  <span class=3D"p">}</span></div><div clas=
+s=3D"line"></div><div class=3D"line">  <span class=3D"n">free</span><span c=
+lass=3D"p">(</span><span class=3D"n">buf</span><span class=3D"p">);</span><=
+/div><div class=3D"line">  <span class=3D"n">editorSetStatusMessage</span><=
+span class=3D"p">(</span><span class=3D"s">"Can't save! I/O error: %s"</spa=
+n><span class=3D"p">,</span> <span class=3D"n">strerror</span><span class=
+=3D"p">(</span><span class=3D"n">errno</span><span class=3D"p">));</span></=
+div><div class=3D"line"><span class=3D"p">}</span></div><div class=3D"line"=
+></div><div class=3D"line"><span class=3D"cm">/*** find ***/</span></div><d=
+iv class=3D"line"></div><div class=3D"line"><span class=3D"kt">void</span> =
+<span class=3D"nf">editorFind</span><span class=3D"p">()</span> <span class=
+=3D"p">{</span></div><ins class=3D"line">  <span class=3D"kt">char</span> <=
+span class=3D"o">*</span><span class=3D"n">query</span> <span class=3D"o">=
+=3D</span> <span class=3D"n">editorPrompt</span><span class=3D"p">(</span><=
+span class=3D"s">"Search: %s (ESC to cancel)"</span><span class=3D"p">,</sp=
+an> <span class=3D"nb">NULL</span><span class=3D"p">);</span></ins><div cla=
+ss=3D"line">  <span class=3D"k">if</span> <span class=3D"p">(</span><span c=
+lass=3D"n">query</span> <span class=3D"o">=3D=3D</span> <span class=3D"nb">=
+NULL</span><span class=3D"p">)</span> <span class=3D"k">return</span><span =
+class=3D"p">;</span></div><div class=3D"line"></div><div class=3D"line">  <=
+span class=3D"kt">int</span> <span class=3D"n">i</span><span class=3D"p">;<=
+/span></div><div class=3D"line">  <span class=3D"k">for</span> <span class=
+=3D"p">(</span><span class=3D"n">i</span> <span class=3D"o">=3D</span> <spa=
+n class=3D"mi">0</span><span class=3D"p">;</span> <span class=3D"n">i</span=
+> <span class=3D"o">&lt;</span> <span class=3D"n">E</span><span class=3D"p"=
+>.</span><span class=3D"n">numrows</span><span class=3D"p">;</span> <span c=
+lass=3D"n">i</span><span class=3D"o">++</span><span class=3D"p">)</span> <s=
+pan class=3D"p">{</span></div><div class=3D"line">    <span class=3D"n">ero=
+w</span> <span class=3D"o">*</span><span class=3D"n">row</span> <span class=
+=3D"o">=3D</span> <span class=3D"o">&amp;</span><span class=3D"n">E</span><=
+span class=3D"p">.</span><span class=3D"n">row</span><span class=3D"p">[</s=
+pan><span class=3D"n">i</span><span class=3D"p">];</span></div><div class=
+=3D"line">    <span class=3D"kt">char</span> <span class=3D"o">*</span><spa=
+n class=3D"n">match</span> <span class=3D"o">=3D</span> <span class=3D"n">s=
+trstr</span><span class=3D"p">(</span><span class=3D"n">row</span><span cla=
+ss=3D"o">-&gt;</span><span class=3D"n">render</span><span class=3D"p">,</sp=
+an> <span class=3D"n">query</span><span class=3D"p">);</span></div><div cla=
+ss=3D"line">    <span class=3D"k">if</span> <span class=3D"p">(</span><span=
+ class=3D"n">match</span><span class=3D"p">)</span> <span class=3D"p">{</sp=
+an></div><div class=3D"line">      <span class=3D"n">E</span><span class=3D=
+"p">.</span><span class=3D"n">cy</span> <span class=3D"o">=3D</span> <span =
+class=3D"n">i</span><span class=3D"p">;</span></div><div class=3D"line">   =
+   <span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">cx=
+</span> <span class=3D"o">=3D</span> <span class=3D"n">editorRowRxToCx</spa=
+n><span class=3D"p">(</span><span class=3D"n">row</span><span class=3D"p">,=
+</span> <span class=3D"n">match</span> <span class=3D"o">-</span> <span cla=
+ss=3D"n">row</span><span class=3D"o">-&gt;</span><span class=3D"n">render</=
+span><span class=3D"p">);</span></div><div class=3D"line">      <span class=
+=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">rowoff</span> <s=
+pan class=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</s=
+pan><span class=3D"n">numrows</span><span class=3D"p">;</span></div><div cl=
+ass=3D"line">      <span class=3D"k">break</span><span class=3D"p">;</span>=
+</div><div class=3D"line">    <span class=3D"p">}</span></div><div class=3D=
+"line">  <span class=3D"p">}</span></div><div class=3D"line"></div><div cla=
+ss=3D"line">  <span class=3D"n">free</span><span class=3D"p">(</span><span =
+class=3D"n">query</span><span class=3D"p">);</span></div><div class=3D"line=
+"><span class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"l=
+ine folded"><span class=3D"cm">/*** append buffer ***/</span></div><div cla=
+ss=3D"line folded"><span class=3D"cm">/*** output ***/</span></div><div cla=
+ss=3D"line folded"><span class=3D"cm">/*** input ***/</span></div><div clas=
+s=3D"line folded"><span class=3D"cm">/*** init ***/</span></div></code></pr=
+e>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c1">=E2=99=8E=EF=B8=8E compiles, but with no obser=
+vable effects</div>
+</div>
+</div>
+
+
+<p>Now let=E2=80=99s move the actual searching code from <code>editorFind()=
+</code> into a function
+called <code>editorFindCallback()</code>. Obviously this will be our callba=
+ck function for
+<code>editorPrompt()</code>.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/incremental-search/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 137</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/incremental-search">incremental-search</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line folded"><span clas=
+s=3D"cm">/*** prototypes ***/</span></div><div class=3D"line folded"><span =
+class=3D"cm">/*** terminal ***/</span></div><div class=3D"line folded"><spa=
+n class=3D"cm">/*** row operations ***/</span></div><div class=3D"line fold=
+ed"><span class=3D"cm">/*** editor operations ***/</span></div><div class=
+=3D"line folded"><span class=3D"cm">/*** file i/o ***/</span></div><div cla=
+ss=3D"line"><span class=3D"cm">/*** find ***/</span></div><div class=3D"lin=
+e"></div><ins class=3D"line"><span class=3D"kt">void</span> <span class=3D"=
+n">editorFindCallback</span><span class=3D"p">(</span><span class=3D"kt">ch=
+ar</span> <span class=3D"o">*</span><span class=3D"n">query</span><span cla=
+ss=3D"p">,</span> <span class=3D"kt">int</span> <span class=3D"n">key</span=
+><span class=3D"p">)</span> <span class=3D"p">{</span></ins><ins class=3D"l=
+ine">  <span class=3D"k">if</span> <span class=3D"p">(</span><span class=3D=
+"n">key</span> <span class=3D"o">=3D=3D</span> <span class=3D"sc">'\r'</spa=
+n> <span class=3D"o">||</span> <span class=3D"n">key</span> <span class=3D"=
+o">=3D=3D</span> <span class=3D"sc">'\x1b'</span><span class=3D"p">)</span>=
+ <span class=3D"p">{</span></ins><ins class=3D"line">    <span class=3D"k">=
+return</span><span class=3D"p">;</span></ins><ins class=3D"line">  <span cl=
+ass=3D"p">}</span></ins><div class=3D"line"></div><div class=3D"line">  <sp=
+an class=3D"kt">int</span> <span class=3D"n">i</span><span class=3D"p">;</s=
+pan></div><div class=3D"line">  <span class=3D"k">for</span> <span class=3D=
+"p">(</span><span class=3D"n">i</span> <span class=3D"o">=3D</span> <span c=
+lass=3D"mi">0</span><span class=3D"p">;</span> <span class=3D"n">i</span> <=
+span class=3D"o">&lt;</span> <span class=3D"n">E</span><span class=3D"p">.<=
+/span><span class=3D"n">numrows</span><span class=3D"p">;</span> <span clas=
+s=3D"n">i</span><span class=3D"o">++</span><span class=3D"p">)</span> <span=
+ class=3D"p">{</span></div><div class=3D"line">    <span class=3D"n">erow</=
+span> <span class=3D"o">*</span><span class=3D"n">row</span> <span class=3D=
+"o">=3D</span> <span class=3D"o">&amp;</span><span class=3D"n">E</span><spa=
+n class=3D"p">.</span><span class=3D"n">row</span><span class=3D"p">[</span=
+><span class=3D"n">i</span><span class=3D"p">];</span></div><div class=3D"l=
+ine">    <span class=3D"kt">char</span> <span class=3D"o">*</span><span cla=
+ss=3D"n">match</span> <span class=3D"o">=3D</span> <span class=3D"n">strstr=
+</span><span class=3D"p">(</span><span class=3D"n">row</span><span class=3D=
+"o">-&gt;</span><span class=3D"n">render</span><span class=3D"p">,</span> <=
+span class=3D"n">query</span><span class=3D"p">);</span></div><div class=3D=
+"line">    <span class=3D"k">if</span> <span class=3D"p">(</span><span clas=
+s=3D"n">match</span><span class=3D"p">)</span> <span class=3D"p">{</span></=
+div><div class=3D"line">      <span class=3D"n">E</span><span class=3D"p">.=
+</span><span class=3D"n">cy</span> <span class=3D"o">=3D</span> <span class=
+=3D"n">i</span><span class=3D"p">;</span></div><div class=3D"line">      <s=
+pan class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">cx</spa=
+n> <span class=3D"o">=3D</span> <span class=3D"n">editorRowRxToCx</span><sp=
+an class=3D"p">(</span><span class=3D"n">row</span><span class=3D"p">,</spa=
+n> <span class=3D"n">match</span> <span class=3D"o">-</span> <span class=3D=
+"n">row</span><span class=3D"o">-&gt;</span><span class=3D"n">render</span>=
+<span class=3D"p">);</span></div><div class=3D"line">      <span class=3D"n=
+">E</span><span class=3D"p">.</span><span class=3D"n">rowoff</span> <span c=
+lass=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</span><=
+span class=3D"n">numrows</span><span class=3D"p">;</span></div><div class=
+=3D"line">      <span class=3D"k">break</span><span class=3D"p">;</span></d=
+iv><div class=3D"line">    <span class=3D"p">}</span></div><div class=3D"li=
+ne">  <span class=3D"p">}</span></div><ins class=3D"line"><span class=3D"p"=
+>}</span></ins><div class=3D"line"></div><ins class=3D"line"><span class=3D=
+"kt">void</span> <span class=3D"n">editorFind</span><span class=3D"p">()</s=
+pan> <span class=3D"p">{</span></ins><ins class=3D"line">  <span class=3D"k=
+t">char</span> <span class=3D"o">*</span><span class=3D"n">query</span> <sp=
+an class=3D"o">=3D</span> <span class=3D"n">editorPrompt</span><span class=
+=3D"p">(</span><span class=3D"s">"Search: %s (ESC to cancel)"</span><span c=
+lass=3D"p">,</span> <span class=3D"n">editorFindCallback</span><span class=
+=3D"p">);</span></ins><ins class=3D"line"></ins><ins class=3D"line">  <span=
+ class=3D"k">if</span> <span class=3D"p">(</span><span class=3D"n">query</s=
+pan><span class=3D"p">)</span> <span class=3D"p">{</span></ins><div class=
+=3D"line">    <span class=3D"n">free</span><span class=3D"p">(</span><span =
+class=3D"n">query</span><span class=3D"p">);</span></div><ins class=3D"line=
+">  <span class=3D"p">}</span></ins><div class=3D"line"><span class=3D"p">}=
+</span></div><div class=3D"line"></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** append buffer ***/</span></div><div class=3D"line folded"><s=
+pan class=3D"cm">/*** output ***/</span></div><div class=3D"line folded"><s=
+pan class=3D"cm">/*** input ***/</span></div><div class=3D"line folded"><sp=
+an class=3D"cm">/*** init ***/</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p>In the callback, we check if the user pressed <kbd>Enter</kbd> or
+<kbd>Escape</kbd>, in which case they are leaving search mode so we <code>r=
+eturn</code>
+immediately instead of doing another search. Otherwise, after any other
+keypress, we do another search for the current <code>query</code> string.</=
+p>
+
+<p>That=E2=80=99s all there is to it. We now have incremental search.</p>
+<h2 id=3D"restore-cursor-position-when-cancelling-search"><a href=3D"https:=
+//viewsourcecode.org/snaptoken/kilo/06.search.html#restore-cursor-position-=
+when-cancelling-search">Restore cursor position when cancelling search</a><=
+/h2>
+
+<p>When the user presses <kbd>Escape</kbd> to cancel a search, we want the =
+cursor
+to go back to where it was when they started the search. To do that, we=E2=
+=80=99ll have
+to save their cursor position and scroll position, and restore those values
+after the search is cancelled.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/restore-cursor/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 138</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/restore-cursor">restore-cursor</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line folded"><span clas=
+s=3D"cm">/*** prototypes ***/</span></div><div class=3D"line folded"><span =
+class=3D"cm">/*** terminal ***/</span></div><div class=3D"line folded"><spa=
+n class=3D"cm">/*** row operations ***/</span></div><div class=3D"line fold=
+ed"><span class=3D"cm">/*** editor operations ***/</span></div><div class=
+=3D"line folded"><span class=3D"cm">/*** file i/o ***/</span></div><div cla=
+ss=3D"line"><span class=3D"cm">/*** find ***/</span></div><div class=3D"lin=
+e"></div><div class=3D"line folded"><span class=3D"kt">void</span> <span cl=
+ass=3D"nf">editorFindCallback</span><span class=3D"p">(</span><span class=
+=3D"kt">char</span> <span class=3D"o">*</span><span class=3D"n">query</span=
+><span class=3D"p">,</span> <span class=3D"kt">int</span> <span class=3D"n"=
+>key</span><span class=3D"p">)</span> <span class=3D"p">{</span> =E2=80=A6 =
+<span class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"lin=
+e"><span class=3D"kt">void</span> <span class=3D"nf">editorFind</span><span=
+ class=3D"p">()</span> <span class=3D"p">{</span></div><ins class=3D"line">=
+  <span class=3D"kt">int</span> <span class=3D"n">saved_cx</span> <span cla=
+ss=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</span><sp=
+an class=3D"n">cx</span><span class=3D"p">;</span></ins><ins class=3D"line"=
+>  <span class=3D"kt">int</span> <span class=3D"n">saved_cy</span> <span cl=
+ass=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</span><s=
+pan class=3D"n">cy</span><span class=3D"p">;</span></ins><ins class=3D"line=
+">  <span class=3D"kt">int</span> <span class=3D"n">saved_coloff</span> <sp=
+an class=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</sp=
+an><span class=3D"n">coloff</span><span class=3D"p">;</span></ins><ins clas=
+s=3D"line">  <span class=3D"kt">int</span> <span class=3D"n">saved_rowoff</=
+span> <span class=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D=
+"p">.</span><span class=3D"n">rowoff</span><span class=3D"p">;</span></ins>=
+<div class=3D"line"></div><div class=3D"line">  <span class=3D"kt">char</sp=
+an> <span class=3D"o">*</span><span class=3D"n">query</span> <span class=3D=
+"o">=3D</span> <span class=3D"n">editorPrompt</span><span class=3D"p">(</sp=
+an><span class=3D"s">"Search: %s (ESC to cancel)"</span><span class=3D"p">,=
+</span> <span class=3D"n">editorFindCallback</span><span class=3D"p">);</sp=
+an></div><div class=3D"line"></div><div class=3D"line">  <span class=3D"k">=
+if</span> <span class=3D"p">(</span><span class=3D"n">query</span><span cla=
+ss=3D"p">)</span> <span class=3D"p">{</span></div><div class=3D"line">    <=
+span class=3D"n">free</span><span class=3D"p">(</span><span class=3D"n">que=
+ry</span><span class=3D"p">);</span></div><ins class=3D"line">  <span class=
+=3D"p">}</span> <span class=3D"k">else</span> <span class=3D"p">{</span></i=
+ns><ins class=3D"line">    <span class=3D"n">E</span><span class=3D"p">.</s=
+pan><span class=3D"n">cx</span> <span class=3D"o">=3D</span> <span class=3D=
+"n">saved_cx</span><span class=3D"p">;</span></ins><ins class=3D"line">    =
+<span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">cy</s=
+pan> <span class=3D"o">=3D</span> <span class=3D"n">saved_cy</span><span cl=
+ass=3D"p">;</span></ins><ins class=3D"line">    <span class=3D"n">E</span><=
+span class=3D"p">.</span><span class=3D"n">coloff</span> <span class=3D"o">=
+=3D</span> <span class=3D"n">saved_coloff</span><span class=3D"p">;</span><=
+/ins><ins class=3D"line">    <span class=3D"n">E</span><span class=3D"p">.<=
+/span><span class=3D"n">rowoff</span> <span class=3D"o">=3D</span> <span cl=
+ass=3D"n">saved_rowoff</span><span class=3D"p">;</span></ins><div class=3D"=
+line">  <span class=3D"p">}</span></div><div class=3D"line"><span class=3D"=
+p">}</span></div><div class=3D"line"></div><div class=3D"line folded"><span=
+ class=3D"cm">/*** append buffer ***/</span></div><div class=3D"line folded=
+"><span class=3D"cm">/*** output ***/</span></div><div class=3D"line folded=
+"><span class=3D"cm">/*** input ***/</span></div><div class=3D"line folded"=
+><span class=3D"cm">/*** init ***/</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p>If <code>query</code> is <code>NULL</code>, that means they pressed <kbd=
+>Escape</kbd>, so in that
+case we restore the values we saved.</p>
+<h2 id=3D"search-forward-and-backward"><a href=3D"https://viewsourcecode.or=
+g/snaptoken/kilo/06.search.html#search-forward-and-backward">Search forward=
+ and backward</a></h2>
+
+<p>The last feature we=E2=80=99d like to add is to allow the user to advanc=
+e to the next
+or previous match in the file using the arrow keys. The <kbd>=E2=86=91</kbd=
+> and
+<kbd>=E2=86=90</kbd> keys will go to the previous match, and the <kbd>=E2=
+=86=93</kbd>
+and <kbd>=E2=86=92</kbd> keys will go to the next match.</p>
+
+<p>We=E2=80=99ll implement this feature using two static variables in our c=
+allback.
+<code>last_match</code> will contain the index of the row that the last mat=
+ch was on, or
+<code>-1</code> if there was no last match. And <code>direction</code> will=
+ store the direction of
+the search: <code>1</code> for searching forward, and <code>-1</code> for s=
+earching backward.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/callback-statics/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 139</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/callback-statics">callback-statics</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line folded"><span clas=
+s=3D"cm">/*** prototypes ***/</span></div><div class=3D"line folded"><span =
+class=3D"cm">/*** terminal ***/</span></div><div class=3D"line folded"><spa=
+n class=3D"cm">/*** row operations ***/</span></div><div class=3D"line fold=
+ed"><span class=3D"cm">/*** editor operations ***/</span></div><div class=
+=3D"line folded"><span class=3D"cm">/*** file i/o ***/</span></div><div cla=
+ss=3D"line"><span class=3D"cm">/*** find ***/</span></div><div class=3D"lin=
+e"></div><div class=3D"line"><span class=3D"kt">void</span> <span class=3D"=
+nf">editorFindCallback</span><span class=3D"p">(</span><span class=3D"kt">c=
+har</span> <span class=3D"o">*</span><span class=3D"n">query</span><span cl=
+ass=3D"p">,</span> <span class=3D"kt">int</span> <span class=3D"n">key</spa=
+n><span class=3D"p">)</span> <span class=3D"p">{</span></div><ins class=3D"=
+line">  <span class=3D"k">static</span> <span class=3D"kt">int</span> <span=
+ class=3D"n">last_match</span> <span class=3D"o">=3D</span> <span class=3D"=
+o">-</span><span class=3D"mi">1</span><span class=3D"p">;</span></ins><ins =
+class=3D"line">  <span class=3D"k">static</span> <span class=3D"kt">int</sp=
+an> <span class=3D"n">direction</span> <span class=3D"o">=3D</span> <span c=
+lass=3D"mi">1</span><span class=3D"p">;</span></ins><div class=3D"line"></d=
+iv><div class=3D"line">  <span class=3D"k">if</span> <span class=3D"p">(</s=
+pan><span class=3D"n">key</span> <span class=3D"o">=3D=3D</span> <span clas=
+s=3D"sc">'\r'</span> <span class=3D"o">||</span> <span class=3D"n">key</spa=
+n> <span class=3D"o">=3D=3D</span> <span class=3D"sc">'\x1b'</span><span cl=
+ass=3D"p">)</span> <span class=3D"p">{</span></div><ins class=3D"line">    =
+<span class=3D"n">last_match</span> <span class=3D"o">=3D</span> <span clas=
+s=3D"o">-</span><span class=3D"mi">1</span><span class=3D"p">;</span></ins>=
+<ins class=3D"line">    <span class=3D"n">direction</span> <span class=3D"o=
+">=3D</span> <span class=3D"mi">1</span><span class=3D"p">;</span></ins><di=
+v class=3D"line">    <span class=3D"k">return</span><span class=3D"p">;</sp=
+an></div><ins class=3D"line">  <span class=3D"p">}</span> <span class=3D"k"=
+>else</span> <span class=3D"k">if</span> <span class=3D"p">(</span><span cl=
+ass=3D"n">key</span> <span class=3D"o">=3D=3D</span> <span class=3D"n">ARRO=
+W_RIGHT</span> <span class=3D"o">||</span> <span class=3D"n">key</span> <sp=
+an class=3D"o">=3D=3D</span> <span class=3D"n">ARROW_DOWN</span><span class=
+=3D"p">)</span> <span class=3D"p">{</span></ins><ins class=3D"line">    <sp=
+an class=3D"n">direction</span> <span class=3D"o">=3D</span> <span class=3D=
+"mi">1</span><span class=3D"p">;</span></ins><ins class=3D"line">  <span cl=
+ass=3D"p">}</span> <span class=3D"k">else</span> <span class=3D"k">if</span=
+> <span class=3D"p">(</span><span class=3D"n">key</span> <span class=3D"o">=
+=3D=3D</span> <span class=3D"n">ARROW_LEFT</span> <span class=3D"o">||</spa=
+n> <span class=3D"n">key</span> <span class=3D"o">=3D=3D</span> <span class=
+=3D"n">ARROW_UP</span><span class=3D"p">)</span> <span class=3D"p">{</span>=
+</ins><ins class=3D"line">    <span class=3D"n">direction</span> <span clas=
+s=3D"o">=3D</span> <span class=3D"o">-</span><span class=3D"mi">1</span><sp=
+an class=3D"p">;</span></ins><ins class=3D"line">  <span class=3D"p">}</spa=
+n> <span class=3D"k">else</span> <span class=3D"p">{</span></ins><ins class=
+=3D"line">    <span class=3D"n">last_match</span> <span class=3D"o">=3D</sp=
+an> <span class=3D"o">-</span><span class=3D"mi">1</span><span class=3D"p">=
+;</span></ins><ins class=3D"line">    <span class=3D"n">direction</span> <s=
+pan class=3D"o">=3D</span> <span class=3D"mi">1</span><span class=3D"p">;</=
+span></ins><div class=3D"line">  <span class=3D"p">}</span></div><div class=
+=3D"line"></div><div class=3D"line">  <span class=3D"kt">int</span> <span c=
+lass=3D"n">i</span><span class=3D"p">;</span></div><div class=3D"line">  <s=
+pan class=3D"k">for</span> <span class=3D"p">(</span><span class=3D"n">i</s=
+pan> <span class=3D"o">=3D</span> <span class=3D"mi">0</span><span class=3D=
+"p">;</span> <span class=3D"n">i</span> <span class=3D"o">&lt;</span> <span=
+ class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">numrows</s=
+pan><span class=3D"p">;</span> <span class=3D"n">i</span><span class=3D"o">=
+++</span><span class=3D"p">)</span> <span class=3D"p">{</span></div><div cl=
+ass=3D"line">    <span class=3D"n">erow</span> <span class=3D"o">*</span><s=
+pan class=3D"n">row</span> <span class=3D"o">=3D</span> <span class=3D"o">&=
+amp;</span><span class=3D"n">E</span><span class=3D"p">.</span><span class=
+=3D"n">row</span><span class=3D"p">[</span><span class=3D"n">i</span><span =
+class=3D"p">];</span></div><div class=3D"line">    <span class=3D"kt">char<=
+/span> <span class=3D"o">*</span><span class=3D"n">match</span> <span class=
+=3D"o">=3D</span> <span class=3D"n">strstr</span><span class=3D"p">(</span>=
+<span class=3D"n">row</span><span class=3D"o">-&gt;</span><span class=3D"n"=
+>render</span><span class=3D"p">,</span> <span class=3D"n">query</span><spa=
+n class=3D"p">);</span></div><div class=3D"line">    <span class=3D"k">if</=
+span> <span class=3D"p">(</span><span class=3D"n">match</span><span class=
+=3D"p">)</span> <span class=3D"p">{</span></div><div class=3D"line">      <=
+span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">cy</sp=
+an> <span class=3D"o">=3D</span> <span class=3D"n">i</span><span class=3D"p=
+">;</span></div><div class=3D"line">      <span class=3D"n">E</span><span c=
+lass=3D"p">.</span><span class=3D"n">cx</span> <span class=3D"o">=3D</span>=
+ <span class=3D"n">editorRowRxToCx</span><span class=3D"p">(</span><span cl=
+ass=3D"n">row</span><span class=3D"p">,</span> <span class=3D"n">match</spa=
+n> <span class=3D"o">-</span> <span class=3D"n">row</span><span class=3D"o"=
+>-&gt;</span><span class=3D"n">render</span><span class=3D"p">);</span></di=
+v><div class=3D"line">      <span class=3D"n">E</span><span class=3D"p">.</=
+span><span class=3D"n">rowoff</span> <span class=3D"o">=3D</span> <span cla=
+ss=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">numrows</span>=
+<span class=3D"p">;</span></div><div class=3D"line">      <span class=3D"k"=
+>break</span><span class=3D"p">;</span></div><div class=3D"line">    <span =
+class=3D"p">}</span></div><div class=3D"line">  <span class=3D"p">}</span><=
+/div><div class=3D"line"><span class=3D"p">}</span></div><div class=3D"line=
+"></div><div class=3D"line folded"><span class=3D"kt">void</span> <span cla=
+ss=3D"nf">editorFind</span><span class=3D"p">()</span> <span class=3D"p">{<=
+/span> =E2=80=A6 <span class=3D"p">}</span></div><div class=3D"line"></div>=
+<div class=3D"line folded"><span class=3D"cm">/*** append buffer ***/</span=
+></div><div class=3D"line folded"><span class=3D"cm">/*** output ***/</span=
+></div><div class=3D"line folded"><span class=3D"cm">/*** input ***/</span>=
+</div><div class=3D"line folded"><span class=3D"cm">/*** init ***/</span></=
+div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c1">=E2=99=8E=EF=B8=8E compiles, but with no obser=
+vable effects</div>
+</div>
+</div>
+
+
+<p>As you can see, we always reset <code>last_match</code> to <code>-1</cod=
+e> unless an arrow key was
+pressed. So we=E2=80=99ll only advance to the next or previous match when a=
+n arrow key
+is pressed. You can also see that we always set <code>direction</code> to <=
+code>1</code> unless the
+<kbd>=E2=86=90</kbd> or <kbd>=E2=86=91</kbd> key was pressed. So we always =
+search in
+the forward direction unless the user specifically asks to search backwards
+from the last match.</p>
+
+<p>If <code>key</code> is <code>'\r'</code> (<kbd>Enter</kbd>) or <code>'\x=
+1b'</code> (<kbd>Escape</kbd>), that
+means we=E2=80=99re about to leave search mode. So we reset <code>last_matc=
+h</code> and
+<code>direction</code> to their initial values to get ready for the next se=
+arch operation.</p>
+
+<p>Now that we have those variables all set up, let=E2=80=99s put them to u=
+se.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/search-arrows/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 140</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/search-arrows">search-arrows</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line folded"><span clas=
+s=3D"cm">/*** prototypes ***/</span></div><div class=3D"line folded"><span =
+class=3D"cm">/*** terminal ***/</span></div><div class=3D"line folded"><spa=
+n class=3D"cm">/*** row operations ***/</span></div><div class=3D"line fold=
+ed"><span class=3D"cm">/*** editor operations ***/</span></div><div class=
+=3D"line folded"><span class=3D"cm">/*** file i/o ***/</span></div><div cla=
+ss=3D"line"><span class=3D"cm">/*** find ***/</span></div><div class=3D"lin=
+e"></div><div class=3D"line"><span class=3D"kt">void</span> <span class=3D"=
+nf">editorFindCallback</span><span class=3D"p">(</span><span class=3D"kt">c=
+har</span> <span class=3D"o">*</span><span class=3D"n">query</span><span cl=
+ass=3D"p">,</span> <span class=3D"kt">int</span> <span class=3D"n">key</spa=
+n><span class=3D"p">)</span> <span class=3D"p">{</span></div><div class=3D"=
+line">  <span class=3D"k">static</span> <span class=3D"kt">int</span> <span=
+ class=3D"n">last_match</span> <span class=3D"o">=3D</span> <span class=3D"=
+o">-</span><span class=3D"mi">1</span><span class=3D"p">;</span></div><div =
+class=3D"line">  <span class=3D"k">static</span> <span class=3D"kt">int</sp=
+an> <span class=3D"n">direction</span> <span class=3D"o">=3D</span> <span c=
+lass=3D"mi">1</span><span class=3D"p">;</span></div><div class=3D"line"></d=
+iv><div class=3D"line">  <span class=3D"k">if</span> <span class=3D"p">(</s=
+pan><span class=3D"n">key</span> <span class=3D"o">=3D=3D</span> <span clas=
+s=3D"sc">'\r'</span> <span class=3D"o">||</span> <span class=3D"n">key</spa=
+n> <span class=3D"o">=3D=3D</span> <span class=3D"sc">'\x1b'</span><span cl=
+ass=3D"p">)</span> <span class=3D"p">{</span></div><div class=3D"line">    =
+<span class=3D"n">last_match</span> <span class=3D"o">=3D</span> <span clas=
+s=3D"o">-</span><span class=3D"mi">1</span><span class=3D"p">;</span></div>=
+<div class=3D"line">    <span class=3D"n">direction</span> <span class=3D"o=
+">=3D</span> <span class=3D"mi">1</span><span class=3D"p">;</span></div><di=
+v class=3D"line">    <span class=3D"k">return</span><span class=3D"p">;</sp=
+an></div><div class=3D"line">  <span class=3D"p">}</span> <span class=3D"k"=
+>else</span> <span class=3D"k">if</span> <span class=3D"p">(</span><span cl=
+ass=3D"n">key</span> <span class=3D"o">=3D=3D</span> <span class=3D"n">ARRO=
+W_RIGHT</span> <span class=3D"o">||</span> <span class=3D"n">key</span> <sp=
+an class=3D"o">=3D=3D</span> <span class=3D"n">ARROW_DOWN</span><span class=
+=3D"p">)</span> <span class=3D"p">{</span></div><div class=3D"line">    <sp=
+an class=3D"n">direction</span> <span class=3D"o">=3D</span> <span class=3D=
+"mi">1</span><span class=3D"p">;</span></div><div class=3D"line">  <span cl=
+ass=3D"p">}</span> <span class=3D"k">else</span> <span class=3D"k">if</span=
+> <span class=3D"p">(</span><span class=3D"n">key</span> <span class=3D"o">=
+=3D=3D</span> <span class=3D"n">ARROW_LEFT</span> <span class=3D"o">||</spa=
+n> <span class=3D"n">key</span> <span class=3D"o">=3D=3D</span> <span class=
+=3D"n">ARROW_UP</span><span class=3D"p">)</span> <span class=3D"p">{</span>=
+</div><div class=3D"line">    <span class=3D"n">direction</span> <span clas=
+s=3D"o">=3D</span> <span class=3D"o">-</span><span class=3D"mi">1</span><sp=
+an class=3D"p">;</span></div><div class=3D"line">  <span class=3D"p">}</spa=
+n> <span class=3D"k">else</span> <span class=3D"p">{</span></div><div class=
+=3D"line">    <span class=3D"n">last_match</span> <span class=3D"o">=3D</sp=
+an> <span class=3D"o">-</span><span class=3D"mi">1</span><span class=3D"p">=
+;</span></div><div class=3D"line">    <span class=3D"n">direction</span> <s=
+pan class=3D"o">=3D</span> <span class=3D"mi">1</span><span class=3D"p">;</=
+span></div><div class=3D"line">  <span class=3D"p">}</span></div><div class=
+=3D"line"></div><ins class=3D"line">  <span class=3D"k">if</span> <span cla=
+ss=3D"p">(</span><span class=3D"n">last_match</span> <span class=3D"o">=3D=
+=3D</span> <span class=3D"o">-</span><span class=3D"mi">1</span><span class=
+=3D"p">)</span> <span class=3D"n">direction</span> <span class=3D"o">=3D</s=
+pan> <span class=3D"mi">1</span><span class=3D"p">;</span></ins><ins class=
+=3D"line">  <span class=3D"kt">int</span> <span class=3D"n">current</span> =
+<span class=3D"o">=3D</span> <span class=3D"n">last_match</span><span class=
+=3D"p">;</span></ins><div class=3D"line">  <span class=3D"kt">int</span> <s=
+pan class=3D"n">i</span><span class=3D"p">;</span></div><div class=3D"line"=
+>  <span class=3D"k">for</span> <span class=3D"p">(</span><span class=3D"n"=
+>i</span> <span class=3D"o">=3D</span> <span class=3D"mi">0</span><span cla=
+ss=3D"p">;</span> <span class=3D"n">i</span> <span class=3D"o">&lt;</span> =
+<span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">numro=
+ws</span><span class=3D"p">;</span> <span class=3D"n">i</span><span class=
+=3D"o">++</span><span class=3D"p">)</span> <span class=3D"p">{</span></div>=
+<ins class=3D"line">    <span class=3D"n">current</span> <span class=3D"o">=
++=3D</span> <span class=3D"n">direction</span><span class=3D"p">;</span></i=
+ns><ins class=3D"line">    <span class=3D"k">if</span> <span class=3D"p">(<=
+/span><span class=3D"n">current</span> <span class=3D"o">=3D=3D</span> <spa=
+n class=3D"o">-</span><span class=3D"mi">1</span><span class=3D"p">)</span>=
+ <span class=3D"n">current</span> <span class=3D"o">=3D</span> <span class=
+=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">numrows</span> <=
+span class=3D"o">-</span> <span class=3D"mi">1</span><span class=3D"p">;</s=
+pan></ins><ins class=3D"line">    <span class=3D"k">else</span> <span class=
+=3D"k">if</span> <span class=3D"p">(</span><span class=3D"n">current</span>=
+ <span class=3D"o">=3D=3D</span> <span class=3D"n">E</span><span class=3D"p=
+">.</span><span class=3D"n">numrows</span><span class=3D"p">)</span> <span =
+class=3D"n">current</span> <span class=3D"o">=3D</span> <span class=3D"mi">=
+0</span><span class=3D"p">;</span></ins><ins class=3D"line"></ins><ins clas=
+s=3D"line">    <span class=3D"n">erow</span> <span class=3D"o">*</span><spa=
+n class=3D"n">row</span> <span class=3D"o">=3D</span> <span class=3D"o">&am=
+p;</span><span class=3D"n">E</span><span class=3D"p">.</span><span class=3D=
+"n">row</span><span class=3D"p">[</span><span class=3D"n">current</span><sp=
+an class=3D"p">];</span></ins><div class=3D"line">    <span class=3D"kt">ch=
+ar</span> <span class=3D"o">*</span><span class=3D"n">match</span> <span cl=
+ass=3D"o">=3D</span> <span class=3D"n">strstr</span><span class=3D"p">(</sp=
+an><span class=3D"n">row</span><span class=3D"o">-&gt;</span><span class=3D=
+"n">render</span><span class=3D"p">,</span> <span class=3D"n">query</span><=
+span class=3D"p">);</span></div><div class=3D"line">    <span class=3D"k">i=
+f</span> <span class=3D"p">(</span><span class=3D"n">match</span><span clas=
+s=3D"p">)</span> <span class=3D"p">{</span></div><ins class=3D"line">      =
+<span class=3D"n">last_match</span> <span class=3D"o">=3D</span> <span clas=
+s=3D"n">current</span><span class=3D"p">;</span></ins><ins class=3D"line"> =
+     <span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">=
+cy</span> <span class=3D"o">=3D</span> <span class=3D"n">current</span><spa=
+n class=3D"p">;</span></ins><div class=3D"line">      <span class=3D"n">E</=
+span><span class=3D"p">.</span><span class=3D"n">cx</span> <span class=3D"o=
+">=3D</span> <span class=3D"n">editorRowRxToCx</span><span class=3D"p">(</s=
+pan><span class=3D"n">row</span><span class=3D"p">,</span> <span class=3D"n=
+">match</span> <span class=3D"o">-</span> <span class=3D"n">row</span><span=
+ class=3D"o">-&gt;</span><span class=3D"n">render</span><span class=3D"p">)=
+;</span></div><div class=3D"line">      <span class=3D"n">E</span><span cla=
+ss=3D"p">.</span><span class=3D"n">rowoff</span> <span class=3D"o">=3D</spa=
+n> <span class=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">nu=
+mrows</span><span class=3D"p">;</span></div><div class=3D"line">      <span=
+ class=3D"k">break</span><span class=3D"p">;</span></div><div class=3D"line=
+">    <span class=3D"p">}</span></div><div class=3D"line">  <span class=3D"=
+p">}</span></div><div class=3D"line"><span class=3D"p">}</span></div><div c=
+lass=3D"line"></div><div class=3D"line folded"><span class=3D"kt">void</spa=
+n> <span class=3D"nf">editorFind</span><span class=3D"p">()</span> <span cl=
+ass=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><div class=3D"=
+line"></div><div class=3D"line folded"><span class=3D"cm">/*** append buffe=
+r ***/</span></div><div class=3D"line folded"><span class=3D"cm">/*** outpu=
+t ***/</span></div><div class=3D"line folded"><span class=3D"cm">/*** input=
+ ***/</span></div><div class=3D"line folded"><span class=3D"cm">/*** init *=
+**/</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>current</code> is the index of the current row we are searching. I=
+f there was a last
+match, it starts on the line after (or before, if we=E2=80=99re searching b=
+ackwards).
+If there wasn=E2=80=99t a last match, it starts at the top of the file and =
+searches in
+the forward direction to find the first match.</p>
+
+<p>The <code>if ... else if</code> causes <code>current</code> to go from t=
+he end of the file back to
+the beginning of the file, or vice versa, to allow a search to =E2=80=9Cwra=
+p around=E2=80=9D
+the end of a file and continue from the top (or bottom).</p>
+
+<p>When we find a match, we set <code>last_match</code> to <code>current</c=
+ode>, so that if the user
+presses the arrow keys, we=E2=80=99ll start the next search from that point=
+.</p>
+
+<p>Finally, let=E2=80=99s not forget to update the prompt text to let the u=
+ser know they
+can use the arrow keys.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/search-arrows-help/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 141</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/search-arrows-help">search-arrows-help</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line folded"><span class=
+=3D"cm">/*** includes ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** defines ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** data ***/</span></div><div class=3D"line folded"><span clas=
+s=3D"cm">/*** prototypes ***/</span></div><div class=3D"line folded"><span =
+class=3D"cm">/*** terminal ***/</span></div><div class=3D"line folded"><spa=
+n class=3D"cm">/*** row operations ***/</span></div><div class=3D"line fold=
+ed"><span class=3D"cm">/*** editor operations ***/</span></div><div class=
+=3D"line folded"><span class=3D"cm">/*** file i/o ***/</span></div><div cla=
+ss=3D"line"><span class=3D"cm">/*** find ***/</span></div><div class=3D"lin=
+e"></div><div class=3D"line folded"><span class=3D"kt">void</span> <span cl=
+ass=3D"nf">editorFindCallback</span><span class=3D"p">(</span><span class=
+=3D"kt">char</span> <span class=3D"o">*</span><span class=3D"n">query</span=
+><span class=3D"p">,</span> <span class=3D"kt">int</span> <span class=3D"n"=
+>key</span><span class=3D"p">)</span> <span class=3D"p">{</span> =E2=80=A6 =
+<span class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"lin=
+e"><span class=3D"kt">void</span> <span class=3D"nf">editorFind</span><span=
+ class=3D"p">()</span> <span class=3D"p">{</span></div><div class=3D"line">=
+  <span class=3D"kt">int</span> <span class=3D"n">saved_cx</span> <span cla=
+ss=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</span><sp=
+an class=3D"n">cx</span><span class=3D"p">;</span></div><div class=3D"line"=
+>  <span class=3D"kt">int</span> <span class=3D"n">saved_cy</span> <span cl=
+ass=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</span><s=
+pan class=3D"n">cy</span><span class=3D"p">;</span></div><div class=3D"line=
+">  <span class=3D"kt">int</span> <span class=3D"n">saved_coloff</span> <sp=
+an class=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D"p">.</sp=
+an><span class=3D"n">coloff</span><span class=3D"p">;</span></div><div clas=
+s=3D"line">  <span class=3D"kt">int</span> <span class=3D"n">saved_rowoff</=
+span> <span class=3D"o">=3D</span> <span class=3D"n">E</span><span class=3D=
+"p">.</span><span class=3D"n">rowoff</span><span class=3D"p">;</span></div>=
+<div class=3D"line"></div><ins class=3D"line">  <span class=3D"kt">char</sp=
+an> <span class=3D"o">*</span><span class=3D"n">query</span> <span class=3D=
+"o">=3D</span> <span class=3D"n">editorPrompt</span><span class=3D"p">(</sp=
+an><span class=3D"s">"Search: %s (Use ESC/Arrows/Enter)"</span><span class=
+=3D"p">,</span></ins><ins class=3D"line">                             <span=
+ class=3D"n">editorFindCallback</span><span class=3D"p">);</span></ins><div=
+ class=3D"line"></div><div class=3D"line">  <span class=3D"k">if</span> <sp=
+an class=3D"p">(</span><span class=3D"n">query</span><span class=3D"p">)</s=
+pan> <span class=3D"p">{</span></div><div class=3D"line">    <span class=3D=
+"n">free</span><span class=3D"p">(</span><span class=3D"n">query</span><spa=
+n class=3D"p">);</span></div><div class=3D"line">  <span class=3D"p">}</spa=
+n> <span class=3D"k">else</span> <span class=3D"p">{</span></div><div class=
+=3D"line">    <span class=3D"n">E</span><span class=3D"p">.</span><span cla=
+ss=3D"n">cx</span> <span class=3D"o">=3D</span> <span class=3D"n">saved_cx<=
+/span><span class=3D"p">;</span></div><div class=3D"line">    <span class=
+=3D"n">E</span><span class=3D"p">.</span><span class=3D"n">cy</span> <span =
+class=3D"o">=3D</span> <span class=3D"n">saved_cy</span><span class=3D"p">;=
+</span></div><div class=3D"line">    <span class=3D"n">E</span><span class=
+=3D"p">.</span><span class=3D"n">coloff</span> <span class=3D"o">=3D</span>=
+ <span class=3D"n">saved_coloff</span><span class=3D"p">;</span></div><div =
+class=3D"line">    <span class=3D"n">E</span><span class=3D"p">.</span><spa=
+n class=3D"n">rowoff</span> <span class=3D"o">=3D</span> <span class=3D"n">=
+saved_rowoff</span><span class=3D"p">;</span></div><div class=3D"line">  <s=
+pan class=3D"p">}</span></div><div class=3D"line"><span class=3D"p">}</span=
+></div><div class=3D"line"></div><div class=3D"line folded"><span class=3D"=
+cm">/*** append buffer ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** output ***/</span></div><div class=3D"line folded"><span cl=
+ass=3D"cm">/*** input ***/</span></div><div class=3D"line folded"><span cla=
+ss=3D"cm">/*** init ***/</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p>In the <a href=3D"https://viewsourcecode.org/snaptoken/kilo/07.syntaxHig=
+hlighting.html">next chapter</a>, we=E2=80=99ll implement syntax
+highlighting and filetype detection, to complete our text editor.</p>
+
+    </div>
+    <div id=3D"version">
+      <a href=3D"https://github.com/snaptoken/kilo-tutorial/tree/v1.0.0beta=
+11">1.0.0beta11</a>
+      (<a href=3D"https://github.com/snaptoken/kilo-tutorial/blob/master/CH=
+ANGELOG.md">changelog</a>)
+    </div>
+    <footer class=3D"bar">
+      <nav>
+        <a href=3D"https://viewsourcecode.org/snaptoken/kilo/06.search.html=
+#">top of page</a>
+      </nav>
+    </footer>
+ =20
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root=3D"true"><=
+template shadowmode=3D"open"><div aria-label=3D"grammarly-integration" role=
+=3D"group" tabindex=3D"-1" class=3D"grammarly-desktop-integration" data-con=
+tent=3D"{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;=
+isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integrati=
+on></html>
+------MultipartBoundary--AtqdXftyM3l2mpaWVKfg21ycmsarWTHSFmwJJSYjEQ----
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: https://viewsourcecode.org/snaptoken/kilo/i/arrow.png
+
+iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAMFWlDQ1BJQ0MgUHJvZmlsZQAASImV
+VwdYU8kWnltSCEkogQhICb0jvQqEDoKAdLARkgChREgICnZlUcG1iwUruipiWwsgi4rYFRGw1wcq
+Ksq6WMCCypsU0PW1753vmzt/zpxz5j9zz53MAKBiz8nLy0FVAcgVFohiQvxZSckpLFIXwIAeoAN9
+QOJwxXl+0dERAMpw/3cZuAUQaX/dVhrrX8f/q6jx+GIuAEg0xGk8MTcX4qMA4FrcPFEBAIQWqDee
+XpAnxX0Qa4ggQQCIuBRnyLGWFKfJsY3MJi4mAGI2AGQqhyPKAIAu5c0q5GbAOHQpR3shTyCEeBPE
+PtxMDg/iBxDb5OZOg1iFDLFF2g9xMv4WM20kJoeTMYLluciEHCgQ5+Vwiv7P5fjfkpsjGZ7DCDZq
+pig0RpozXLc92dPCpZgKcaMwLTIKYnWILwp4MnspvpcpCY1X2PdyxQFwzQATABTwOIHhEOtCzJRk
+x/spsCNHJPOF9mikoCAsToHTRNNiFPHRQmFOZIQizuJMftgw3sIXB8UO26QLgsMghpWGHi3OjEuU
+80TPFgoSIiGmQ9wmzo4NV/g+Ks4MiBy2EUlipJxNIH6fLgqOkdtgWrni4bwwOy5HNhesBYxdkBkX
+KvfFkvjipIhhDjx+YJCcA8bjC+MV3DBYXf4xCt/SvJxohT22hZ8TEiNfZ+yQuDB22LejABaYfB2w
+x1mccdGKuQbyCqLj5NxwFESAABAIWEACWxqYBrKAoLW3rhf+ko8EAw4QgQzAB7YKzbBHomxECJ+x
+oBj8CREfiEf8/GWjfFAI9V9HtPKnLUiXjRbKPLLBM4hzcR3cB/fCI+CTDZsj7o57DPuxVIZnJQYR
+A4mhxGCi5QgPLmSdA5sICP6NLhz2fJidlItwOIfv8QjPCO2Ex4SbhE7CXZAAnsqiKKymChaIfmLO
+AuNBJ4wWrMgu7cfscDPI2gX3x70hf8gdZ+I6wBZ3hpn44b4wNxeo/ZGhZITb97X8eT4p6x/zUejp
+VnQXBYu0kTcTMGL1c5SAH9aIB/vwny2xxdgR7AJ2GruENWJ1gIWdwuqxFuyEFI9UwlNZJQzPFiPj
+lg3jCIZt7Gvse+y//DQ3RzG/dL3EBfwZBdKPIWBaXpFIkJFZwPKDuzGfFSbk2tmwHO0d3ACQ7u3y
+reMdU7ZnI8zL33X5TQB4lEFlxncdxxiA488AYAx81xm/heW+AoATbVyJqFCuk27HgAAoQAV+Fdrw
+f8MYWMB8HIEr8AJsEATGgSgQB5LBFLjimSAXcp4OZoH5oBSUgxVgLdgItoIdYA/YDw6DOtAIToPz
+4ApoAzfBfVgX3eAV6AMDYBBBEBJCQxiINmKAmCLWiCPijvggQUgEEoMkI6lIBiJEJMgsZCFSjqxC
+NiLbkWrkd+Q4chq5hLQjd5EupAd5i3xGMZSKaqB6qBk6BnVH/dBwNA6djGag+WgxWoIuQ9ejVeg+
+tBY9jV5Bb6Kd6Cu0HwOYMsbEDDFbzB0LwKKwFCwdE2FzsDKsAqvCDmAN8D1fxzqxXuwTTsQZOAu3
+hbUZisfjXDwfn4MvxTfie/Ba/Cx+He/C+/BvBBpBl2BN8CSEEZIIGYTphFJCBWEX4RjhHPxuugkD
+RCKRSTQnusHvMpmYRZxJXErcTDxIbCK2E58Q+0kkkjbJmuRNiiJxSAWkUtIG0j7SKVIHqZv0kaxM
+NiA7koPJKWQheQG5gryXfJLcQX5OHlRSVTJV8lSKUuIpFSktV9qp1KB0TalbaZCiRjGneFPiKFmU
++ZT1lAOUc5QHlHfKyspGyh7KE5QFyvOU1ysfUr6o3KX8iapOtaIGUCdRJdRl1N3UJupd6jsajWZG
+Y9NSaAW0ZbRq2hnaI9pHOoNuRw+j8+hz6ZX0WnoH/bWKkoqpip/KFJVilQqVIyrXVHpVlVTNVANU
+OapzVCtVj6veVu1XY6g5qEWp5aotVdurdknthTpJ3Uw9SJ2nXqK+Q/2M+hMGxjBmBDC4jIWMnYxz
+jG4Nooa5RphGlka5xn6NVo0+TXVNZ80EzRmalZonNDuZGNOMGcbMYS5nHmbeYn4epTfKbxR/1JJR
+B0Z1jPqgNVqLrcXXKtM6qHVT67M2SztIO1t7pXad9kMdXMdKZ4LOdJ0tOud0ekdrjPYazR1dNvrw
+6Hu6qK6VbozuTN0dui26/Xr6eiF6eXob9M7o9eoz9dn6Wfpr9E/q9xgwDHwMBAZrDE4ZvGRpsvxY
+Oaz1rLOsPkNdw1BDieF2w1bDQSNzo3ijBUYHjR4aU4zdjdON1xg3G/eZGJiMN5llUmNyz1TJ1N00
+03Sd6QXTD2bmZolmi8zqzF6Ya5mHmReb15g/sKBZ+FrkW1RZ3LAkWrpbZltutmyzQq1crDKtKq2u
+WaPWrtYC683W7TYEGw8boU2VzW1bqq2fbaFtjW2XHdMuwm6BXZ3d6zEmY1LGrBxzYcw3exf7HPud
+9vcd1B3GOSxwaHB462jlyHWsdLzhRHMKdprrVO/0xtname+8xfmOC8NlvMsil2aXr65uriLXA649
+biZuqW6b3G67a7hHuy91v+hB8PD3mOvR6PHJ09WzwPOw519etl7ZXnu9Xow1H8sfu3PsE28jb473
+du9OH5ZPqs82n05fQ1+Ob5XvY7Yxm8fexX7uZ+mX5bfP77W/vb/I/5j/hwDPgNkBTYFYYEhgWWBr
+kHpQfNDGoEfBRsEZwTXBfSEuITNDmkIJoeGhK0Nvh+mFccOqw/rGuY2bPe5sODU8Nnxj+OMIqwhR
+RMN4dPy48avHP4g0jRRG1kWBqLCo1VEPo82j86P/mECcED2hcsKzGIeYWTEXYhmxU2P3xg7E+cct
+j7sfbxEviW9OUEmYlFCd8CExMHFVYmfSmKTZSVeSdZIFyfUppJSElF0p/RODJq6d2D3JZVLppFuT
+zSfPmHxpis6UnCknpqpM5Uw9kkpITUzdm/qFE8Wp4vSnhaVtSuvjBnDXcV/x2Lw1vB6+N38V/3m6
+d/qq9BcZ3hmrM3oyfTMrMnsFAYKNgjdZoVlbsz5kR2Xvzh7KScw5mEvOTc09LlQXZgvPTtOfNmNa
+e551XmleZ75n/tr8PlG4aJcYEU8W1xdowGNOi8RC8oukq9CnsLLw4/SE6UdmqM0QzmgpsipaUvS8
+OLj4t5n4TO7M5lmGs+bP6prtN3v7HGRO2pzmucZzS+Z2zwuZt2c+ZX72/KsL7BesWvB+YeLChhK9
+knklT34J+aWmlF4qKr29yGvR1sX4YsHi1iVOSzYs+VbGK7tcbl9eUf5lKXfp5V8dfl3/69Cy9GWt
+y12Xb1lBXCFccWul78o9q9RWFa96snr86to1rDVla96vnbr2UoVzxdZ1lHWSdZ3rI9bXbzDZsGLD
+l42ZG29W+lce3KS7acmmD5t5mzu2sLcc2Kq3tXzr522CbXe2h2yvrTKrqthB3FG449nOhJ0XfnP/
+rXqXzq7yXV93C3d37onZc7barbp6r+7e5TVojaSmZ9+kfW37A/fXH7A9sP0g82D5IXBIcujl76m/
+3zocfrj5iPuRA0dNj246xjhWVovUFtX21WXWddYn17cfH3e8ucGr4dgfdn/sbjRsrDyheWL5ScrJ
+kpNDp4pP9TflNfWezjj9pHlq8/0zSWdunJ1wtvVc+LmL54PPn7ngd+HURe+LjZc8Lx2/7H657orr
+ldoWl5ZjV12uHmt1ba295natvs2jraF9bPvJDt+O09cDr5+/EXbjys3Im+234m/duT3pducd3p0X
+d3PuvrlXeG/w/rwHhAdlD1UfVjzSfVT1D8t/HOx07TzRFdjV8jj28f0n3CevnoqffukueUZ7VvHc
+4Hn1C8cXjT3BPW0vJ77sfpX3arC39E+1Pze9tnh99C/2Xy19SX3db0Rvht4ufaf9bvd75/fN/dH9
+jwZyBwY/lH3U/rjnk/unC58TPz8fnP6F9GX9V8uvDd/Cvz0Yyh0ayuOIOLKjAAYbmp4OwNvdANCS
+4dmhDQAKXX73kgkivy/KEPhPWH4/k4krALvZAMTPAyACnlG2wGYKMRX20qN3HBugTk4jTSHidCdH
+eSwqvMEQPg4NvdMDgNQAwFfR0NDg5qGhrzsh2bsANOXL73xSIcLz/TbZOeeqcVEg+En+Cd8+bBGE
++qe9AAAACXBIWXMAABYlAAAWJQFJUiTwAAACBGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6
+eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAi
+PgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRm
+LXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAg
+ICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyIKICAgICAgICAg
+ICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8
+ZXhpZjpQaXhlbFlEaW1lbnNpb24+NTg0PC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgICAg
+PGV4aWY6UGl4ZWxYRGltZW5zaW9uPjE1ODwvZXhpZjpQaXhlbFhEaW1lbnNpb24+CiAgICAgICAg
+IDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2Ny
+aXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgrYaV7IAAABPklEQVRYCWP8DwQMgxgw
+DWK3gZ026kBKY2g0BEdDkNIQoFT/aBocDUFKQ4BS/aNpcDQEKQ0BSvWTnwZ/PmN48OwzpfYT1E+e
+Az+fZci19mMIqTrG8JOgFRQqALWoSQGf7u/4H2ls/N/YOP7/mU+k6CRPLQvx/vvMcGByFUPJwuNQ
+Lc8ZHhzbzPDgyy+ijfgJDG5j32AGdV6itTCQ5MDLx2GOA1nwlmHt8uUMb5+/Jdq2t2+FGVqtfIAO
+ZCdaDwOpAX9/xyRg9IKiuPL//R+k6iZdPckOBFnx6dIaiCNbj5JuI4k6SIhiRKzw6gYz7JjPw7Dr
+mTBCkEYsRpCHaGQ2VYwlrxykitXEGTLqQOLCCbeq0RDEHTbEyYyGIHHhhFvVaAjiDhviZEZDkLhw
+wq1qNARxhw1xMqMhSFw44VYFAJIg/q91M+6jAAAAAElFTkSuQmCC
+
+------MultipartBoundary--AtqdXftyM3l2mpaWVKfg21ycmsarWTHSFmwJJSYjEQ----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://fonts.googleapis.com/css?family=PT+Serif:400,400i,700|Work+Sans:700|Fira+Mono:400,500
+
+@charset "utf-8";
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgK_=
+7Ss9XZYalI.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C8A, =
+U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgIv=
+7Ss9XZYalI.woff2") format("woff2"); unicode-range: U+301, U+400-45F, U+490-=
+491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgKv=
+7Ss9XZYalI.woff2") format("woff2"); unicode-range: U+1F00-1FFF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgJf=
+7Ss9XZYalI.woff2") format("woff2"); unicode-range: U+370-377, U+37A-37F, U+=
+384-38A, U+38C, U+38E-3A1, U+3A3-3FF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgnN=
+_3nP3TaZFxBQ.woff2") format("woff2"); unicode-range: U+2000-2001, U+2004-20=
+08, U+200A, U+23B8-23BD, U+2500-259F; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgKP=
+7Ss9XZYalI.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+=
+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9=
+F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A7=
+20-A7FF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgJv=
+7Ss9XZYQ.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, =
+U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U=
++2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3Hk_fUS5NBBASF.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C=
+8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HmvfUS5NBBASF.woff2") format("woff2"); unicode-range: U+301, U+400-45F, U+=
+490-491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HkvfUS5NBBASF.woff2") format("woff2"); unicode-range: U+1F00-1FFF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HnffUS5NBBASF.woff2") format("woff2"); unicode-range: U+370-377, U+37A-37F=
+, U+384-38A, U+38C, U+38E-3A1, U+3A3-3FF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HJNbxZLtLDDy8Rg.woff2") format("woff2"); unicode-range: U+2000-2001, U+200=
+4-2008, U+200A, U+23B8-23BD, U+2500-259F; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HkPfUS5NBBASF.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5=
+, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00=
+-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, =
+U+A720-A7FF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HnvfUS5NBBA.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-1=
+53, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20A=
+C, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "PT Serif"; font-style: italic; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRTQgYoZZY2vCFuvAFT_rC1=
+cgT9rct48Q.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C8A, =
+U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "PT Serif"; font-style: italic; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRTQgYoZZY2vCFuvAFT_rm1=
+cgT9rct48Q.woff2") format("woff2"); unicode-range: U+301, U+400-45F, U+490-=
+491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "PT Serif"; font-style: italic; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRTQgYoZZY2vCFuvAFT_rO1=
+cgT9rct48Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+=
+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9=
+F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A7=
+20-A7FF; }
+
+@font-face { font-family: "PT Serif"; font-style: italic; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRTQgYoZZY2vCFuvAFT_r21=
+cgT9rcs.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U=
++2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+=
+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRVQgYoZZY2vCFuvAFbzr-_=
+dSb_nco.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C8A, U+2=
+0B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRVQgYoZZY2vCFuvAFSzr-_=
+dSb_nco.woff2") format("woff2"); unicode-range: U+301, U+400-45F, U+490-491=
+, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRVQgYoZZY2vCFuvAFYzr-_=
+dSb_nco.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7=
+-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, =
+U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-=
+A7FF; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRVQgYoZZY2vCFuvAFWzr-_=
+dSb_.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2B=
+B-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+212=
+2, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 700;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRSQgYoZZY2vCFuvAnt66qf=
+VyvVp8NAyIw.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C8A,=
+ U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 700;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRSQgYoZZY2vCFuvAnt66qW=
+VyvVp8NAyIw.woff2") format("woff2"); unicode-range: U+301, U+400-45F, U+490=
+-491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 700;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRSQgYoZZY2vCFuvAnt66qc=
+VyvVp8NAyIw.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U=
++2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E=
+9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A=
+720-A7FF; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 700;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRSQgYoZZY2vCFuvAnt66qS=
+VyvVp8NA.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, =
+U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U=
++2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "Work Sans"; font-style: normal; font-weight: 700=
+; src: url("https://fonts.gstatic.com/s/worksans/v24/QGY_z_wNahGAdqQ43RhVcI=
+gYT2Xz5u32K67QBiAJpo3ZKyHaQfhf.woff2") format("woff2"); unicode-range: U+10=
+2-103, U+110-111, U+128-129, U+168-169, U+1A0-1A1, U+1AF-1B0, U+300-301, U+=
+303-304, U+308-309, U+323, U+329, U+1EA0-1EF9, U+20AB; }
+
+@font-face { font-family: "Work Sans"; font-style: normal; font-weight: 700=
+; src: url("https://fonts.gstatic.com/s/worksans/v24/QGY_z_wNahGAdqQ43RhVcI=
+gYT2Xz5u32K67QBiEJpo3ZKyHaQfhf.woff2") format("woff2"); unicode-range: U+10=
+0-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1=
+D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+211=
+3, U+2C60-2C7F, U+A720-A7FF; }
+
+@font-face { font-family: "Work Sans"; font-style: normal; font-weight: 700=
+; src: url("https://fonts.gstatic.com/s/worksans/v24/QGY_z_wNahGAdqQ43RhVcI=
+gYT2Xz5u32K67QBi8Jpo3ZKyHaQQ.woff2") format("woff2"); unicode-range: U+0-FF=
+, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+=
+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+------MultipartBoundary--AtqdXftyM3l2mpaWVKfg21ycmsarWTHSFmwJJSYjEQ----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://viewsourcecode.org/snaptoken/kilo/style.css
+
+@charset "utf-8";
+
+@import url("https://fonts.googleapis.com/css?family=3DPT+Serif:400,400i,70=
+0|Work+Sans:700|Fira+Mono:400,500");
+
+* { margin: 0px; padding: 0px; box-sizing: border-box; }
+
+body { font-family: "PT Serif", Utopia, Georgia, Times, "Apple Symbols", se=
+rif; line-height: 140%; color: rgb(51, 51, 51); font-size: 18px; }
+
+#container { width: 700px; margin: 18px auto; }
+
+.bar { display: block; width: 100%; background-color: rgb(204, 238, 187); b=
+ox-shadow: rgb(221, 221, 221) 0px 0px 15px 1px; }
+
+.bar > nav { display: flex; justify-content: space-between; width: 700px; m=
+argin: 0px auto; }
+
+footer.bar > nav { justify-content: center; }
+
+.bar > nav > a { display: block; padding: 2px 0px 4px; color: rgb(17, 85, 3=
+4); }
+
+#version { text-align: right; font-size: 12px; font-family: "Fira Mono", mo=
+nospace; padding-right: 5px; }
+
+#version a { color: rgb(51, 51, 51); }
+
+h1, h2, h3, h4, h5, h6 { font-family: "Work Sans", Futura, Helvetica, Arial=
+, sans-serif; color: rgb(34, 34, 34); line-height: 100%; margin-top: 32px; =
+}
+
+h2 a, h3 a, h4 a { color: inherit; text-decoration: none; }
+
+h2 a::before, h3 a::before, h4 a::before { content: "#"; color: rgb(255, 25=
+5, 255); font-weight: normal; transition: color 0.15s; display: block; floa=
+t: left; width: 32px; margin-left: -32px; }
+
+h2 a:hover::before, h3 a:hover::before, h4 a:hover::before { color: rgb(204=
+, 204, 204); }
+
+h1 { margin-top: 0px; font-size: 38px; border-bottom: 3px solid rgb(238, 11=
+9, 204); display: inline-block; }
+
+h2 { font-size: 26px; }
+
+p { margin-top: 18px; }
+
+ul, ol { margin-top: 18px; margin-left: 36px; }
+
+hr { border-top: none; border-right: none; border-left: none; border-image:=
+ initial; border-bottom: 1px solid rgb(136, 136, 136); }
+
+a { color: rgb(34, 102, 221); }
+
+code { font-family: "Fira Mono", monospace; font-size: inherit; white-space=
+: nowrap; background-color: rgb(239, 244, 234); padding: 1px 3px; }
+
+h1 code, h2 code, h3 code, h4 code, h5 code, h6 code { font-weight: normal;=
+ }
+
+kbd { font-family: "Fira Mono", monospace; border-radius: 3px; padding: 2px=
+ 3px; box-shadow: rgb(119, 119, 119) 1px 1px 1px; margin: 2px; font-size: 1=
+4px; background: rgb(247, 247, 247); font-weight: 500; color: rgb(85, 85, 8=
+5); white-space: nowrap; }
+
+h1 kbd, h2 kbd, h3 kbd, h4 kbd, h5 kbd, h6 kbd { font-size: 80%; }
+
+.diff code { font-size: 14px; line-height: 20px; padding: 0px; margin-botto=
+m: 18px; white-space: inherit; }
+
+.diff pre { background-color: rgb(255, 252, 250); padding: 5px 0px; }
+
+.diff { border: 1px solid rgb(237, 231, 227); border-radius: 3px; margin-to=
+p: 18px; }
+
+.diff .diff-header { display: flex; justify-content: space-between; padding=
+: 0px 5px; background-color: rgb(237, 231, 227); font-size: 16px; color: rg=
+b(102, 102, 102); }
+
+.diff .step-number { font-weight: bold; }
+
+.diff .step-filename { font-weight: bold; }
+
+.diff .step-name { font-family: "Fira Mono", monospace; font-size: 12px; }
+
+.diff .diff-header a { text-decoration: none; color: rgb(102, 102, 102); }
+
+.diff .diff-header a:hover { text-decoration: underline; }
+
+.diff .step-filename a { text-decoration: underline; }
+
+.diff .diff-footer { background-color: rgb(237, 231, 227); }
+
+.diff .diff-footer > div { font-size: 12px; line-height: 16px; height: 16px=
+; padding-right: 5px; text-align: right; }
+
+.diff .diff-tag-c0 { color: rgb(187, 51, 51); }
+
+.diff .diff-tag-c1 { color: rgb(51, 51, 187); }
+
+.diff .diff-tag-c2 { color: rgb(51, 187, 51); }
+
+.diff .diff-tag-c-unknown { color: rgb(170, 102, 34); }
+
+.diff .line { display: block; height: 20px; padding: 0px 5px; position: rel=
+ative; }
+
+.diff .line.folded { background-color: rgb(238, 238, 255); opacity: 0.5; }
+
+.diff ins.line { background-color: rgb(255, 255, 221); text-decoration: non=
+e; }
+
+.diff ins.line::after { display: block; content: ""; width: 20px; height: 2=
+0px; background-image: url("i/arrow.png"); background-size: 20px 20px; posi=
+tion: absolute; right: -24px; top: 0px; }
+
+.diff del.line { background-color: rgb(255, 221, 221); text-decoration: lin=
+e-through; }
+
+.diff del.line::after { display: block; content: ""; width: 20px; height: 2=
+0px; background-image: url("i/x.png"); background-size: 20px 20px; position=
+: absolute; right: -24px; top: 0px; }
+
+@media screen and (max-width: 700px) {
+  #container { width: auto; margin: 18px 0px; padding: 0px 5px; }
+  .bar > nav { width: auto; margin: 0px; padding: 0px 5px; }
+  .highlight { overflow-x: scroll; }
+  .diff .line { width: 700px; }
+  .diff ins.line::after, .diff del.line::after { display: none; }
+}
+
+.highlight table td { padding: 5px; }
+
+.highlight table pre { margin: 0px; }
+
+.highlight .cm { color: rgb(153, 153, 136); font-style: italic; }
+
+.highlight .cp { color: rgb(153, 153, 153); font-weight: 500; }
+
+.highlight .c1 { color: rgb(153, 153, 136); font-style: italic; }
+
+.highlight .cs { color: rgb(153, 153, 153); }
+
+.highlight .c, .highlight .cd { color: rgb(153, 153, 136); font-style: ital=
+ic; }
+
+.highlight .err { color: rgb(166, 23, 23); background-color: rgb(227, 210, =
+210); }
+
+.highlight .gd { color: rgb(0, 0, 0); background-color: rgb(255, 221, 221);=
+ }
+
+.highlight .ge { color: rgb(0, 0, 0); font-style: italic; }
+
+.highlight .gr { color: rgb(170, 0, 0); }
+
+.highlight .gh { color: rgb(153, 153, 153); }
+
+.highlight .gi { color: rgb(0, 0, 0); background-color: rgb(221, 255, 221);=
+ }
+
+.highlight .go { color: rgb(136, 136, 136); }
+
+.highlight .gp { color: rgb(85, 85, 85); }
+
+.highlight .gs { font-weight: 500; }
+
+.highlight .gu { color: rgb(170, 170, 170); }
+
+.highlight .gt { color: rgb(170, 0, 0); }
+
+.highlight .kc { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .kd { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .kn { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .kp { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .kr { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .kt { color: rgb(68, 85, 136); font-weight: 500; }
+
+.highlight .k, .highlight .kv { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .mf { color: rgb(0, 153, 153); }
+
+.highlight .mh { color: rgb(0, 153, 153); }
+
+.highlight .il { color: rgb(0, 153, 153); }
+
+.highlight .mi { color: rgb(0, 153, 153); }
+
+.highlight .mo { color: rgb(0, 153, 153); }
+
+.highlight .m, .highlight .mb, .highlight .mx { color: rgb(0, 153, 153); }
+
+.highlight .sb { color: rgb(221, 17, 68); }
+
+.highlight .sc { color: rgb(221, 17, 68); }
+
+.highlight .sd { color: rgb(221, 17, 68); }
+
+.highlight .s2 { color: rgb(221, 17, 68); }
+
+.highlight .se { color: rgb(221, 17, 68); }
+
+.highlight .sh { color: rgb(221, 17, 68); }
+
+.highlight .si { color: rgb(221, 17, 68); }
+
+.highlight .sx { color: rgb(221, 17, 68); }
+
+.highlight .sr { color: rgb(0, 153, 38); }
+
+.highlight .s1 { color: rgb(221, 17, 68); }
+
+.highlight .ss { color: rgb(153, 0, 115); }
+
+.highlight .s { color: rgb(221, 17, 68); }
+
+.highlight .na { color: rgb(0, 128, 128); }
+
+.highlight .bp { color: rgb(153, 153, 153); }
+
+.highlight .nb { color: rgb(0, 134, 179); }
+
+.highlight .nc { color: rgb(68, 85, 136); font-weight: 500; }
+
+.highlight .no { color: rgb(0, 128, 128); }
+
+.highlight .nd { color: rgb(60, 93, 93); font-weight: 500; }
+
+.highlight .ni { color: rgb(128, 0, 128); }
+
+.highlight .ne { color: rgb(153, 0, 0); font-weight: 500; }
+
+.highlight .nf { color: rgb(153, 0, 0); font-weight: 500; }
+
+.highlight .nl { color: rgb(153, 0, 0); font-weight: 500; }
+
+.highlight .nn { color: rgb(85, 85, 85); }
+
+.highlight .nt { color: rgb(0, 0, 128); }
+
+.highlight .vc { color: rgb(0, 128, 128); }
+
+.highlight .vg { color: rgb(0, 128, 128); }
+
+.highlight .vi { color: rgb(0, 128, 128); }
+
+.highlight .nv { color: rgb(0, 128, 128); }
+
+.highlight .ow { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .o { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .w { color: rgb(187, 187, 187); }
+
+.highlight { background-color: rgb(248, 248, 248); }
+------MultipartBoundary--AtqdXftyM3l2mpaWVKfg21ycmsarWTHSFmwJJSYjEQ------

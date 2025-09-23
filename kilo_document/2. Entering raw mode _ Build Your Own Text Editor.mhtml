@@ -1,0 +1,2087 @@
+From: <Saved by Blink>
+Snapshot-Content-Location: https://viewsourcecode.org/snaptoken/kilo/02.enteringRawMode.html
+Subject: 2. Entering raw mode | Build Your Own Text Editor
+Date: Tue, 23 Sep 2025 12:37:41 +0100
+MIME-Version: 1.0
+Content-Type: multipart/related;
+	type="text/html";
+	boundary="----MultipartBoundary--36c6FriKl2T9Dih9V1dHFZMjUGZk1QXwGO4r5ENLB5----"
+
+
+------MultipartBoundary--36c6FriKl2T9Dih9V1dHFZMjUGZk1QXwGO4r5ENLB5----
+Content-Type: text/html
+Content-ID: <frame-52DD9075882A8A50928F6BAC7A5437A4@mhtml.blink>
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://viewsourcecode.org/snaptoken/kilo/02.enteringRawMode.html
+
+<!DOCTYPE html><html><head><meta http-equiv=3D"Content-Type" content=3D"tex=
+t/html; charset=3DUTF-8">
+   =20
+    <meta name=3D"viewport" content=3D"width=3Ddevice-width, initial-scale=
+=3D1.0, maximum-scale=3D1.0">
+    <title>2. Entering raw mode | Build Your Own Text Editor</title>
+    <link href=3D"https://viewsourcecode.org/snaptoken/kilo/style.css" rel=
+=3D"stylesheet">
+  </head>
+  <body data-new-gr-c-s-check-loaded=3D"14.1254.0" data-gr-ext-installed=3D=
+"">
+    <header class=3D"bar">
+      <nav>
+        <a href=3D"https://viewsourcecode.org/snaptoken/kilo/01.setup.html"=
+>=E2=86=90 prev</a>
+        <a href=3D"https://viewsourcecode.org/snaptoken/kilo/index.html">co=
+ntents</a>
+        <a href=3D"https://viewsourcecode.org/snaptoken/kilo/03.rawInputAnd=
+Output.html">next =E2=86=92</a>
+      </nav>
+    </header>
+    <div id=3D"container">
+      <h1 id=3D"entering-raw-mode">Entering raw mode</h1>
+
+<p>Let=E2=80=99s try and read keypresses from the user. (The lines you need=
+ to add are
+highlighted and marked with arrows.)</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/read/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 3</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/read">read</a></div>
+</div><pre class=3D"highlight"><code><ins class=3D"line"><span class=3D"cp"=
+>#include &lt;unistd.h&gt;</span></ins><div class=3D"line"></div><div class=
+=3D"line"><span class=3D"kt">int</span> <span class=3D"nf">main</span><span=
+ class=3D"p">()</span> <span class=3D"p">{</span></div><ins class=3D"line">=
+  <span class=3D"kt">char</span> <span class=3D"n">c</span><span class=3D"p=
+">;</span></ins><ins class=3D"line">  <span class=3D"k">while</span> <span =
+class=3D"p">(</span><span class=3D"n">read</span><span class=3D"p">(</span>=
+<span class=3D"n">STDIN_FILENO</span><span class=3D"p">,</span> <span class=
+=3D"o">&amp;</span><span class=3D"n">c</span><span class=3D"p">,</span> <sp=
+an class=3D"mi">1</span><span class=3D"p">)</span> <span class=3D"o">=3D=3D=
+</span> <span class=3D"mi">1</span><span class=3D"p">);</span></ins><div cl=
+ass=3D"line">  <span class=3D"k">return</span> <span class=3D"mi">0</span><=
+span class=3D"p">;</span></div><div class=3D"line"><span class=3D"p">}</spa=
+n></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>read()</code> and <code>STDIN_FILENO</code> come from <code>&lt;un=
+istd.h&gt;</code>. We are asking <code>read()</code> to
+read <code>1</code> byte from the standard input into the variable <code>c<=
+/code>, and to keep doing
+it until there are no more bytes to read. <code>read()</code> returns the n=
+umber of bytes
+that it read, and will return <code>0</code> when it reaches the end of a f=
+ile.</p>
+
+<p>When you run <code>./kilo</code>, your terminal gets hooked up to the st=
+andard input, and
+so your keyboard input gets read into the <code>c</code> variable. However,=
+ by default
+your terminal starts in <strong>canonical mode</strong>, also called <stron=
+g>cooked mode</strong>. In
+this mode, keyboard input is only sent to your program when the user presse=
+s
+<kbd>Enter</kbd>. This is useful for many programs: it lets the user type i=
+n a
+line of text, use <kbd>Backspace</kbd> to fix errors until they get their i=
+nput
+exactly the way they want it, and finally press <kbd>Enter</kbd> to send it=
+ to
+the program. But it does not work well for programs with more complex user
+interfaces, like text editors. We want to process each keypress as it comes=
+ in,
+so we can respond to it immediately.</p>
+
+<p>What we want is <strong>raw mode</strong>. Unfortunately, there is no si=
+mple switch you can
+flip to set the terminal to raw mode. Raw mode is achieved by turning off a
+great many flags in the terminal, which we will do gradually over the cours=
+e of
+this chapter.</p>
+
+<p>To exit the above program, press <kbd>Ctrl-D</kbd> to tell <code>read()<=
+/code> that it=E2=80=99s
+reached the end of file. Or you can always press <kbd>Ctrl-C</kbd> to signa=
+l
+the process to terminate immediately.</p>
+<h2 id=3D"press-q-to-quit"><a href=3D"https://viewsourcecode.org/snaptoken/=
+kilo/02.enteringRawMode.html#press-q-to-quit">Press <kbd>q</kbd> to quit?</=
+a></h2>
+
+<p>To demonstrate how canonical mode works, we=E2=80=99ll have the program =
+exit when it
+reads a <kbd>q</kbd> keypress from the user. (Lines you need to change are
+highlighted and marked the same way as lines you need to add.)</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/press-q/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 4</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/press-q">press-q</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><div class=
+=3D"line"><span class=3D"kt">int</span> <span class=3D"nf">main</span><span=
+ class=3D"p">()</span> <span class=3D"p">{</span></div><div class=3D"line">=
+  <span class=3D"kt">char</span> <span class=3D"n">c</span><span class=3D"p=
+">;</span></div><ins class=3D"line">  <span class=3D"k">while</span> <span =
+class=3D"p">(</span><span class=3D"n">read</span><span class=3D"p">(</span>=
+<span class=3D"n">STDIN_FILENO</span><span class=3D"p">,</span> <span class=
+=3D"o">&amp;</span><span class=3D"n">c</span><span class=3D"p">,</span> <sp=
+an class=3D"mi">1</span><span class=3D"p">)</span> <span class=3D"o">=3D=3D=
+</span> <span class=3D"mi">1</span> <span class=3D"o">&amp;&amp;</span> <sp=
+an class=3D"n">c</span> <span class=3D"o">!=3D</span> <span class=3D"sc">'q=
+'</span><span class=3D"p">);</span></ins><div class=3D"line">  <span class=
+=3D"k">return</span> <span class=3D"mi">0</span><span class=3D"p">;</span><=
+/div><div class=3D"line"><span class=3D"p">}</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p>To quit this program, you will have to type a line of text that includes=
+ a <code>q</code>
+in it, and then press enter. The program will quickly read the line of text=
+ one
+character at a time until it reads the <code>q</code>, at which point the <=
+code>while</code> loop
+will stop and the program will exit. Any characters after the <code>q</code=
+> will be left
+unread on the input queue, and you may see that input being fed into your s=
+hell
+after your program exits.</p>
+<h2 id=3D"turn-off-echoing"><a href=3D"https://viewsourcecode.org/snaptoken=
+/kilo/02.enteringRawMode.html#turn-off-echoing">Turn off echoing</a></h2>
+
+<p>We can set a terminal=E2=80=99s attributes by (1) using <code>tcgetattr(=
+)</code> to read the
+current attributes into a struct, (2) modifying the struct by hand, and
+(3) passing the modified struct to <code>tcsetattr()</code> to write the ne=
+w terminal
+attributes back out. Let=E2=80=99s try turning off the <code>ECHO</code> fe=
+ature this way.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/echo/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 5</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/echo">echo</a></div>
+</div><pre class=3D"highlight"><code><ins class=3D"line"><span class=3D"cp"=
+>#include &lt;termios.h&gt;</span></ins><div class=3D"line"><span class=3D"=
+cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><ins cl=
+ass=3D"line"><span class=3D"kt">void</span> <span class=3D"nf">enableRawMod=
+e</span><span class=3D"p">()</span> <span class=3D"p">{</span></ins><ins cl=
+ass=3D"line">  <span class=3D"k">struct</span> <span class=3D"n">termios</s=
+pan> <span class=3D"n">raw</span><span class=3D"p">;</span></ins><ins class=
+=3D"line"></ins><ins class=3D"line">  <span class=3D"n">tcgetattr</span><sp=
+an class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span class=3D"=
+p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">raw</span><span=
+ class=3D"p">);</span></ins><ins class=3D"line"></ins><ins class=3D"line"> =
+ <span class=3D"n">raw</span><span class=3D"p">.</span><span class=3D"n">c_=
+lflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</span><s=
+pan class=3D"p">(</span><span class=3D"n">ECHO</span><span class=3D"p">);</=
+span></ins><ins class=3D"line"></ins><ins class=3D"line">  <span class=3D"n=
+">tcsetattr</span><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO<=
+/span><span class=3D"p">,</span> <span class=3D"n">TCSAFLUSH</span><span cl=
+ass=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">raw</spa=
+n><span class=3D"p">);</span></ins><ins class=3D"line"><span class=3D"p">}<=
+/span></ins><div class=3D"line"></div><div class=3D"line"><span class=3D"kt=
+">int</span> <span class=3D"nf">main</span><span class=3D"p">()</span> <spa=
+n class=3D"p">{</span></div><ins class=3D"line">  <span class=3D"n">enableR=
+awMode</span><span class=3D"p">();</span></ins><div class=3D"line"></div><d=
+iv class=3D"line">  <span class=3D"kt">char</span> <span class=3D"n">c</spa=
+n><span class=3D"p">;</span></div><div class=3D"line">  <span class=3D"k">w=
+hile</span> <span class=3D"p">(</span><span class=3D"n">read</span><span cl=
+ass=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span class=3D"p">,<=
+/span> <span class=3D"o">&amp;</span><span class=3D"n">c</span><span class=
+=3D"p">,</span> <span class=3D"mi">1</span><span class=3D"p">)</span> <span=
+ class=3D"o">=3D=3D</span> <span class=3D"mi">1</span> <span class=3D"o">&a=
+mp;&amp;</span> <span class=3D"n">c</span> <span class=3D"o">!=3D</span> <s=
+pan class=3D"sc">'q'</span><span class=3D"p">);</span></div><div class=3D"l=
+ine">  <span class=3D"k">return</span> <span class=3D"mi">0</span><span cla=
+ss=3D"p">;</span></div><div class=3D"line"><span class=3D"p">}</span></div>=
+</code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>struct termios</code>, <code>tcgetattr()</code>, <code>tcsetattr()=
+</code>, <code>ECHO</code>, and <code>TCSAFLUSH</code> all
+come from <code>&lt;termios.h&gt;</code>.</p>
+
+<p>The <code>ECHO</code> feature causes each key you type to be printed to =
+the terminal, so
+you can see what you=E2=80=99re typing. This is useful in canonical mode, b=
+ut really
+gets in the way when we are trying to carefully render a user interface in =
+raw
+mode. So we turn it off. This program does the same thing as the one in the
+previous step, it just doesn=E2=80=99t print what you are typing. You may b=
+e familiar
+with this mode if you=E2=80=99ve ever had to type a password at the termina=
+l, when
+using <code>sudo</code> for example.</p>
+
+<p>After the program quits, depending on your shell, you may find your term=
+inal is
+still not echoing what you type. Don=E2=80=99t worry, it will still listen =
+to what you
+type. Just press <kbd>Ctrl-C</kbd> to start a fresh line of input to your
+shell, and type in <code>reset</code> and press <kbd>Enter</kbd>. This rese=
+ts your
+terminal back to normal in most cases. Failing that, you can always restart
+your terminal emulator. We=E2=80=99ll fix this whole problem in the next st=
+ep.</p>
+
+<p>Terminal attributes can be read into a <code>termios</code> struct by <c=
+ode>tcgetattr()</code>. After
+modifying them, you can then apply them to the terminal using <code>tcsetat=
+tr()</code>.
+The <code>TCSAFLUSH</code> argument specifies when to apply the change: in =
+this case, it
+waits for all pending output to be written to the terminal, and also discar=
+ds
+any input that hasn=E2=80=99t been read.</p>
+
+<p>The <code>c_lflag</code> field is for =E2=80=9Clocal flags=E2=80=9D. A c=
+omment in macOS=E2=80=99s <code>&lt;termios.h&gt;</code>
+describes it as a =E2=80=9Cdumping ground for other state=E2=80=9D. So perh=
+aps it should be
+thought of as =E2=80=9Cmiscellaneous flags=E2=80=9D. The other flag fields =
+are <code>c_iflag</code> (input
+flags), <code>c_oflag</code> (output flags), and <code>c_cflag</code> (cont=
+rol flags), all of which
+we will have to modify to enable raw mode.</p>
+
+<p><code>ECHO</code> is a <a href=3D"https://en.wikipedia.org/wiki/Bit_fiel=
+d">bitflag</a>, defined as
+<code>00000000000000000000000000001000</code> in binary. We use the bitwise=
+-NOT operator
+(<code>~</code>) on this value to get <code>1111111111111111111111111111011=
+1</code>. We then
+bitwise-AND this value with the flags field, which forces the fourth bit in=
+ the
+flags field to become <code>0</code>, and causes every other bit to retain =
+its current
+value. Flipping bits like this is common in C.</p>
+<h2 id=3D"disable-raw-mode-at-exit"><a href=3D"https://viewsourcecode.org/s=
+naptoken/kilo/02.enteringRawMode.html#disable-raw-mode-at-exit">Disable raw=
+ mode at exit</a></h2>
+
+<p>Let=E2=80=99s be nice to the user and restore their terminal=E2=80=99s o=
+riginal attributes when
+our program exits. We=E2=80=99ll save a copy of the <code>termios</code> st=
+ruct in its original
+state, and use <code>tcsetattr()</code> to apply it to the terminal when th=
+e program
+exits.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/atexit/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 6</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/atexit">atexit</a></div>
+</div><pre class=3D"highlight"><code><ins class=3D"line"><span class=3D"cp"=
+>#include &lt;stdlib.h&gt;</span></ins><div class=3D"line"><span class=3D"c=
+p">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><in=
+s class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></ins=
+><ins class=3D"line"></ins><ins class=3D"line"><span class=3D"kt">void</spa=
+n> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</span> <spa=
+n class=3D"p">{</span></ins><ins class=3D"line">  <span class=3D"n">tcsetat=
+tr</span><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><sp=
+an class=3D"p">,</span> <span class=3D"n">TCSAFLUSH</span><span class=3D"p"=
+>,</span> <span class=3D"o">&amp;</span><span class=3D"n">orig_termios</spa=
+n><span class=3D"p">);</span></ins><ins class=3D"line"><span class=3D"p">}<=
+/span></ins><div class=3D"line"></div><div class=3D"line"><span class=3D"kt=
+">void</span> <span class=3D"nf">enableRawMode</span><span class=3D"p">()</=
+span> <span class=3D"p">{</span></div><ins class=3D"line">  <span class=3D"=
+n">tcgetattr</span><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO=
+</span><span class=3D"p">,</span> <span class=3D"o">&amp;</span><span class=
+=3D"n">orig_termios</span><span class=3D"p">);</span></ins><ins class=3D"li=
+ne">  <span class=3D"n">atexit</span><span class=3D"p">(</span><span class=
+=3D"n">disableRawMode</span><span class=3D"p">);</span></ins><div class=3D"=
+line"></div><ins class=3D"line">  <span class=3D"k">struct</span> <span cla=
+ss=3D"n">termios</span> <span class=3D"n">raw</span> <span class=3D"o">=3D<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></ins=
+><div class=3D"line">  <span class=3D"n">raw</span><span class=3D"p">.</spa=
+n><span class=3D"n">c_lflag</span> <span class=3D"o">&amp;=3D</span> <span =
+class=3D"o">~</span><span class=3D"p">(</span><span class=3D"n">ECHO</span>=
+<span class=3D"p">);</span></div><div class=3D"line"></div><div class=3D"li=
+ne">  <span class=3D"n">tcsetattr</span><span class=3D"p">(</span><span cla=
+ss=3D"n">STDIN_FILENO</span><span class=3D"p">,</span> <span class=3D"n">TC=
+SAFLUSH</span><span class=3D"p">,</span> <span class=3D"o">&amp;</span><spa=
+n class=3D"n">raw</span><span class=3D"p">);</span></div><div class=3D"line=
+"><span class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"l=
+ine folded"><span class=3D"kt">int</span> <span class=3D"nf">main</span><sp=
+an class=3D"p">()</span> <span class=3D"p">{</span> =E2=80=A6 <span class=
+=3D"p">}</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>atexit()</code> comes from <code>&lt;stdlib.h&gt;</code>. We use i=
+t to register our
+<code>disableRawMode()</code> function to be called automatically when the =
+program exits,
+whether it exits by returning from <code>main()</code>, or by calling the <=
+code>exit()</code>
+function. This way we can ensure we=E2=80=99ll leave the terminal attribute=
+s the way
+we found them when our program exits.</p>
+
+<p>We store the original terminal attributes in a global variable, <code>or=
+ig_termios</code>.
+We assign the <code>orig_termios</code> struct to the <code>raw</code> stru=
+ct in order to make a copy
+of it before we start making our changes.</p>
+
+<p>You may notice that leftover input is no longer fed into your shell afte=
+r the
+program quits. This is because of the <code>TCSAFLUSH</code> option being p=
+assed to
+<code>tcsetattr()</code> when the program exits. As described earlier, it d=
+iscards any
+unread input before applying the changes to the terminal. (Note: This doesn=
+=E2=80=99t
+happen in Cygwin for some reason, but it won=E2=80=99t matter once we are r=
+eading input
+one byte at a time.)</p>
+<h2 id=3D"turn-off-canonical-mode"><a href=3D"https://viewsourcecode.org/sn=
+aptoken/kilo/02.enteringRawMode.html#turn-off-canonical-mode">Turn off cano=
+nical mode</a></h2>
+
+<p>There is an <code>ICANON</code> flag that allows us to turn off canonica=
+l mode. This means
+we will finally be reading input byte-by-byte, instead of line-by-line.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/icanon/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 7</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/icanon">icanon</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D"c=
+p">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">vo=
+id</span> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><div class=3D"line"><span class=3D"kt">void</span> <=
+span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <span cla=
+ss=3D"p">{</span></div><div class=3D"line">  <span class=3D"n">tcgetattr</s=
+pan><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span cl=
+ass=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">orig_ter=
+mios</span><span class=3D"p">);</span></div><div class=3D"line">  <span cla=
+ss=3D"n">atexit</span><span class=3D"p">(</span><span class=3D"n">disableRa=
+wMode</span><span class=3D"p">);</span></div><div class=3D"line"></div><div=
+ class=3D"line">  <span class=3D"k">struct</span> <span class=3D"n">termios=
+</span> <span class=3D"n">raw</span> <span class=3D"o">=3D</span> <span cla=
+ss=3D"n">orig_termios</span><span class=3D"p">;</span></div><ins class=3D"l=
+ine">  <span class=3D"n">raw</span><span class=3D"p">.</span><span class=3D=
+"n">c_lflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</s=
+pan><span class=3D"p">(</span><span class=3D"n">ECHO</span> <span class=3D"=
+o">|</span> <span class=3D"n">ICANON</span><span class=3D"p">);</span></ins=
+><div class=3D"line"></div><div class=3D"line">  <span class=3D"n">tcsetatt=
+r</span><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><spa=
+n class=3D"p">,</span> <span class=3D"n">TCSAFLUSH</span><span class=3D"p">=
+,</span> <span class=3D"o">&amp;</span><span class=3D"n">raw</span><span cl=
+ass=3D"p">);</span></div><div class=3D"line"><span class=3D"p">}</span></di=
+v><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">i=
+nt</span> <span class=3D"nf">main</span><span class=3D"p">()</span> <span c=
+lass=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>ICANON</code> comes from <code>&lt;termios.h&gt;</code>. Input fla=
+gs (the ones in the <code>c_iflag</code>
+field) generally start with <code>I</code> like <code>ICANON</code> does. H=
+owever, <code>ICANON</code> is not an
+input flag, it=E2=80=99s a =E2=80=9Clocal=E2=80=9D flag in the <code>c_lfla=
+g</code> field. So that=E2=80=99s confusing.</p>
+
+<p>Now the program will quit as soon as you press <kbd>q</kbd>.</p>
+<h2 id=3D"display-keypresses"><a href=3D"https://viewsourcecode.org/snaptok=
+en/kilo/02.enteringRawMode.html#display-keypresses">Display keypresses</a><=
+/h2>
+
+<p>To get a better idea of how input in raw mode works, let=E2=80=99s print=
+ out each byte
+that we <code>read()</code>. We=E2=80=99ll print each character=E2=80=99s n=
+umeric ASCII value, as well as
+the character it represents if it is a printable character.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/keypresses/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 8</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/keypresses">keypresses</a></div>
+</div><pre class=3D"highlight"><code><ins class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></ins><ins class=3D"line"><span class=3D"cp=
+">#include &lt;stdio.h&gt;</span></ins><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D=
+"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">vo=
+id</span> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">void</=
+span> <span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <s=
+pan class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><div cla=
+ss=3D"line"></div><div class=3D"line"><span class=3D"kt">int</span> <span c=
+lass=3D"nf">main</span><span class=3D"p">()</span> <span class=3D"p">{</spa=
+n></div><div class=3D"line">  <span class=3D"n">enableRawMode</span><span c=
+lass=3D"p">();</span></div><div class=3D"line"></div><div class=3D"line">  =
+<span class=3D"kt">char</span> <span class=3D"n">c</span><span class=3D"p">=
+;</span></div><ins class=3D"line">  <span class=3D"k">while</span> <span cl=
+ass=3D"p">(</span><span class=3D"n">read</span><span class=3D"p">(</span><s=
+pan class=3D"n">STDIN_FILENO</span><span class=3D"p">,</span> <span class=
+=3D"o">&amp;</span><span class=3D"n">c</span><span class=3D"p">,</span> <sp=
+an class=3D"mi">1</span><span class=3D"p">)</span> <span class=3D"o">=3D=3D=
+</span> <span class=3D"mi">1</span> <span class=3D"o">&amp;&amp;</span> <sp=
+an class=3D"n">c</span> <span class=3D"o">!=3D</span> <span class=3D"sc">'q=
+'</span><span class=3D"p">)</span> <span class=3D"p">{</span></ins><ins cla=
+ss=3D"line">    <span class=3D"k">if</span> <span class=3D"p">(</span><span=
+ class=3D"n">iscntrl</span><span class=3D"p">(</span><span class=3D"n">c</s=
+pan><span class=3D"p">))</span> <span class=3D"p">{</span></ins><ins class=
+=3D"line">      <span class=3D"n">printf</span><span class=3D"p">(</span><s=
+pan class=3D"s">"%d</span><span class=3D"se">\n</span><span class=3D"s">"</=
+span><span class=3D"p">,</span> <span class=3D"n">c</span><span class=3D"p"=
+>);</span></ins><ins class=3D"line">    <span class=3D"p">}</span> <span cl=
+ass=3D"k">else</span> <span class=3D"p">{</span></ins><ins class=3D"line"> =
+     <span class=3D"n">printf</span><span class=3D"p">(</span><span class=
+=3D"s">"%d ('%c')</span><span class=3D"se">\n</span><span class=3D"s">"</sp=
+an><span class=3D"p">,</span> <span class=3D"n">c</span><span class=3D"p">,=
+</span> <span class=3D"n">c</span><span class=3D"p">);</span></ins><ins cla=
+ss=3D"line">    <span class=3D"p">}</span></ins><ins class=3D"line">  <span=
+ class=3D"p">}</span></ins><div class=3D"line"></div><div class=3D"line">  =
+<span class=3D"k">return</span> <span class=3D"mi">0</span><span class=3D"p=
+">;</span></div><div class=3D"line"><span class=3D"p">}</span></div></code>=
+</pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>iscntrl()</code> comes from <code>&lt;ctype.h&gt;</code>, and <cod=
+e>printf()</code> comes from <code>&lt;stdio.h&gt;</code>.</p>
+
+<p><code>iscntrl()</code> tests whether a character is a control character.=
+ Control
+characters are nonprintable characters that we don=E2=80=99t want to print =
+to the
+screen. ASCII codes 0=E2=80=9331 are all control characters, and 127 is als=
+o a
+control character. ASCII codes 32=E2=80=93126 are all printable. (Check out=
+ the
+<a href=3D"http://asciitable.com/">ASCII table</a> to see all of the charac=
+ters.)</p>
+
+<p><code>printf()</code> can print multiple representations of a byte. <cod=
+e>%d</code> tells it to
+format the byte as a decimal number (its ASCII code), and <code>%c</code> t=
+ells it to
+write out the byte directly, as a character.</p>
+
+<p>This is a very useful program. It shows us how various keypresses transl=
+ate
+into the bytes we read. Most ordinary keys translate directly into the
+characters they represent. But try seeing what happens when you press the a=
+rrow
+keys, or <kbd>Escape</kbd>, or <kbd>Page Up</kbd>, or <kbd>Page Down</kbd>,=
+ or
+<kbd>Home</kbd>, or <kbd>End</kbd>, or <kbd>Backspace</kbd>, or
+<kbd>Delete</kbd>, or <kbd>Enter</kbd>. Try key combinations with
+<kbd>Ctrl</kbd>, like <kbd>Ctrl-A</kbd>, <kbd>Ctrl-B</kbd>, etc.</p>
+
+<p>You=E2=80=99ll notice a few interesting things:</p>
+
+<ul>
+<li>Arrow keys, <kbd>Page Up</kbd>, <kbd>Page Down</kbd>, <kbd>Home</kbd>, =
+and
+<kbd>End</kbd> all input 3 or 4 bytes to the terminal: <code>27</code>, <co=
+de>'['</code>, and then
+one or two other characters. This is known as an <em>escape sequence</em>. =
+All
+escape sequences start with a <code>27</code> byte. Pressing <kbd>Escape</k=
+bd> sends a
+single <code>27</code> byte as input.</li>
+<li><kbd>Backspace</kbd> is byte <code>127</code>. <kbd>Delete</kbd> is a 4=
+-byte escape
+sequence.</li>
+<li><kbd>Enter</kbd> is byte <code>10</code>, which is a newline character,=
+ also known as
+<code>'\n'</code>.</li>
+<li><kbd>Ctrl-A</kbd> is <code>1</code>, <kbd>Ctrl-B</kbd> is <code>2</code=
+>, <kbd>Ctrl-C</kbd> is=E2=80=A6
+oh, that terminates the program, right. But the <kbd>Ctrl</kbd> key
+combinations that do work seem to map the letters A=E2=80=93Z to the codes
+1=E2=80=9326.</li>
+</ul>
+
+<p>By the way, if you happen to press <kbd>Ctrl-S</kbd>, you may find your =
+program
+seems to be frozen. What you=E2=80=99ve done is you=E2=80=99ve asked your p=
+rogram to <a href=3D"https://en.wikipedia.org/wiki/Software_flow_control">s=
+top
+sending you output</a>. Press
+<kbd>Ctrl-Q</kbd> to tell it to resume sending you output.</p>
+
+<p>Also, if you press <kbd>Ctrl-Z</kbd> (or maybe <kbd>Ctrl-Y</kbd>), your =
+program
+will be suspended to the background. Run the <code>fg</code> command to bri=
+ng it back to
+the foreground. (It may quit immediately after you do that, as a result of
+<code>read()</code> returning <code>-1</code> to indicate that an error occ=
+urred. This happens on
+macOS, while Linux seems to be able to resume the <code>read()</code> call =
+properly.)</p>
+<h2 id=3D"turn-off-ctrl-c-and-ctrl-z-signals"><a href=3D"https://viewsource=
+code.org/snaptoken/kilo/02.enteringRawMode.html#turn-off-ctrl-c-and-ctrl-z-=
+signals">Turn off <kbd>Ctrl-C</kbd> and <kbd>Ctrl-Z</kbd> signals</a></h2>
+
+<p>By default, <kbd>Ctrl-C</kbd> sends a <code>SIGINT</code> signal to the =
+current process
+which causes it to terminate, and <kbd>Ctrl-Z</kbd> sends a <code>SIGTSTP</=
+code> signal to
+the current process which causes it to suspend. Let=E2=80=99s turn off the =
+sending of
+both of these signals.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/isig/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 9</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/isig">isig</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></div><div class=3D"line"><span class=3D"cp=
+">#include &lt;stdio.h&gt;</span></div><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D=
+"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">vo=
+id</span> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><div class=3D"line"><span class=3D"kt">void</span> <=
+span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <span cla=
+ss=3D"p">{</span></div><div class=3D"line">  <span class=3D"n">tcgetattr</s=
+pan><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span cl=
+ass=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">orig_ter=
+mios</span><span class=3D"p">);</span></div><div class=3D"line">  <span cla=
+ss=3D"n">atexit</span><span class=3D"p">(</span><span class=3D"n">disableRa=
+wMode</span><span class=3D"p">);</span></div><div class=3D"line"></div><div=
+ class=3D"line">  <span class=3D"k">struct</span> <span class=3D"n">termios=
+</span> <span class=3D"n">raw</span> <span class=3D"o">=3D</span> <span cla=
+ss=3D"n">orig_termios</span><span class=3D"p">;</span></div><ins class=3D"l=
+ine">  <span class=3D"n">raw</span><span class=3D"p">.</span><span class=3D=
+"n">c_lflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</s=
+pan><span class=3D"p">(</span><span class=3D"n">ECHO</span> <span class=3D"=
+o">|</span> <span class=3D"n">ICANON</span> <span class=3D"o">|</span> <spa=
+n class=3D"n">ISIG</span><span class=3D"p">);</span></ins><div class=3D"lin=
+e"></div><div class=3D"line">  <span class=3D"n">tcsetattr</span><span clas=
+s=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span class=3D"p">,</s=
+pan> <span class=3D"n">TCSAFLUSH</span><span class=3D"p">,</span> <span cla=
+ss=3D"o">&amp;</span><span class=3D"n">raw</span><span class=3D"p">);</span=
+></div><div class=3D"line"><span class=3D"p">}</span></div><div class=3D"li=
+ne"></div><div class=3D"line folded"><span class=3D"kt">int</span> <span cl=
+ass=3D"nf">main</span><span class=3D"p">()</span> <span class=3D"p">{</span=
+> =E2=80=A6 <span class=3D"p">}</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>ISIG</code> comes from <code>&lt;termios.h&gt;</code>. Like <code>=
+ICANON</code>, it starts with <code>I</code> but isn=E2=80=99t an
+input flag.</p>
+
+<p>Now <kbd>Ctrl-C</kbd> can be read as a <code>3</code> byte and <kbd>Ctrl=
+-Z</kbd> can be
+read as a <code>26</code> byte.</p>
+
+<p>This also disables <kbd>Ctrl-Y</kbd> on macOS, which is like <kbd>Ctrl-Z=
+</kbd>
+except it waits for the program to read input before suspending it.</p>
+<h2 id=3D"disable-ctrl-s-and-ctrl-q"><a href=3D"https://viewsourcecode.org/=
+snaptoken/kilo/02.enteringRawMode.html#disable-ctrl-s-and-ctrl-q">Disable <=
+kbd>Ctrl-S</kbd> and <kbd>Ctrl-Q</kbd></a></h2>
+
+<p>By default, <kbd>Ctrl-S</kbd> and <kbd>Ctrl-Q</kbd> are used for
+<a href=3D"https://en.wikipedia.org/wiki/Software_flow_control">software fl=
+ow control</a>.
+<kbd>Ctrl-S</kbd> stops data from being transmitted to the terminal until y=
+ou
+press <kbd>Ctrl-Q</kbd>. This originates in the days when you might want to
+pause the transmission of data to let a device like a printer catch up. Let=
+=E2=80=99s
+just turn off that feature.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/ixon/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 10</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/ixon">ixon</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></div><div class=3D"line"><span class=3D"cp=
+">#include &lt;stdio.h&gt;</span></div><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D=
+"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">vo=
+id</span> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><div class=3D"line"><span class=3D"kt">void</span> <=
+span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <span cla=
+ss=3D"p">{</span></div><div class=3D"line">  <span class=3D"n">tcgetattr</s=
+pan><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span cl=
+ass=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">orig_ter=
+mios</span><span class=3D"p">);</span></div><div class=3D"line">  <span cla=
+ss=3D"n">atexit</span><span class=3D"p">(</span><span class=3D"n">disableRa=
+wMode</span><span class=3D"p">);</span></div><div class=3D"line"></div><div=
+ class=3D"line">  <span class=3D"k">struct</span> <span class=3D"n">termios=
+</span> <span class=3D"n">raw</span> <span class=3D"o">=3D</span> <span cla=
+ss=3D"n">orig_termios</span><span class=3D"p">;</span></div><ins class=3D"l=
+ine">  <span class=3D"n">raw</span><span class=3D"p">.</span><span class=3D=
+"n">c_iflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</s=
+pan><span class=3D"p">(</span><span class=3D"n">IXON</span><span class=3D"p=
+">);</span></ins><div class=3D"line">  <span class=3D"n">raw</span><span cl=
+ass=3D"p">.</span><span class=3D"n">c_lflag</span> <span class=3D"o">&amp;=
+=3D</span> <span class=3D"o">~</span><span class=3D"p">(</span><span class=
+=3D"n">ECHO</span> <span class=3D"o">|</span> <span class=3D"n">ICANON</spa=
+n> <span class=3D"o">|</span> <span class=3D"n">ISIG</span><span class=3D"p=
+">);</span></div><div class=3D"line"></div><div class=3D"line">  <span clas=
+s=3D"n">tcsetattr</span><span class=3D"p">(</span><span class=3D"n">STDIN_F=
+ILENO</span><span class=3D"p">,</span> <span class=3D"n">TCSAFLUSH</span><s=
+pan class=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">ra=
+w</span><span class=3D"p">);</span></div><div class=3D"line"><span class=3D=
+"p">}</span></div><div class=3D"line"></div><div class=3D"line folded"><spa=
+n class=3D"kt">int</span> <span class=3D"nf">main</span><span class=3D"p">(=
+)</span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></d=
+iv></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>IXON</code> comes from <code>&lt;termios.h&gt;</code>. The <code>I=
+</code> stands for =E2=80=9Cinput flag=E2=80=9D (which it is,
+unlike the other <code>I</code> flags we=E2=80=99ve seen so far) and <code>=
+XON</code> comes from the names of
+the two control characters that <kbd>Ctrl-S</kbd> and <kbd>Ctrl-Q</kbd>
+produce: <code>XOFF</code> to pause transmission and <code>XON</code> to re=
+sume transmission.</p>
+
+<p>Now <kbd>Ctrl-S</kbd> can be read as a <code>19</code> byte and <kbd>Ctr=
+l-Q</kbd> can be
+read as a <code>17</code> byte.</p>
+<h2 id=3D"disable-ctrl-v"><a href=3D"https://viewsourcecode.org/snaptoken/k=
+ilo/02.enteringRawMode.html#disable-ctrl-v">Disable <kbd>Ctrl-V</kbd></a></=
+h2>
+
+<p>On some systems, when you type <kbd>Ctrl-V</kbd>, the terminal waits for=
+ you to
+type another character and then sends that character literally. For example=
+,
+before we disabled <kbd>Ctrl-C</kbd>, you might=E2=80=99ve been able to typ=
+e
+<kbd>Ctrl-V</kbd> and then <kbd>Ctrl-C</kbd> to input a <code>3</code> byte=
+. We can turn
+off this feature using the <code>IEXTEN</code> flag.</p>
+
+<p>Turning off <code>IEXTEN</code> also fixes <kbd>Ctrl-O</kbd> in macOS, w=
+hose terminal
+driver is otherwise set to discard that control character.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/iexten/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 11</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/iexten">iexten</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></div><div class=3D"line"><span class=3D"cp=
+">#include &lt;stdio.h&gt;</span></div><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D=
+"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">vo=
+id</span> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><div class=3D"line"><span class=3D"kt">void</span> <=
+span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <span cla=
+ss=3D"p">{</span></div><div class=3D"line">  <span class=3D"n">tcgetattr</s=
+pan><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span cl=
+ass=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">orig_ter=
+mios</span><span class=3D"p">);</span></div><div class=3D"line">  <span cla=
+ss=3D"n">atexit</span><span class=3D"p">(</span><span class=3D"n">disableRa=
+wMode</span><span class=3D"p">);</span></div><div class=3D"line"></div><div=
+ class=3D"line">  <span class=3D"k">struct</span> <span class=3D"n">termios=
+</span> <span class=3D"n">raw</span> <span class=3D"o">=3D</span> <span cla=
+ss=3D"n">orig_termios</span><span class=3D"p">;</span></div><div class=3D"l=
+ine">  <span class=3D"n">raw</span><span class=3D"p">.</span><span class=3D=
+"n">c_iflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</s=
+pan><span class=3D"p">(</span><span class=3D"n">IXON</span><span class=3D"p=
+">);</span></div><ins class=3D"line">  <span class=3D"n">raw</span><span cl=
+ass=3D"p">.</span><span class=3D"n">c_lflag</span> <span class=3D"o">&amp;=
+=3D</span> <span class=3D"o">~</span><span class=3D"p">(</span><span class=
+=3D"n">ECHO</span> <span class=3D"o">|</span> <span class=3D"n">ICANON</spa=
+n> <span class=3D"o">|</span> <span class=3D"n">IEXTEN</span> <span class=
+=3D"o">|</span> <span class=3D"n">ISIG</span><span class=3D"p">);</span></i=
+ns><div class=3D"line"></div><div class=3D"line">  <span class=3D"n">tcseta=
+ttr</span><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><s=
+pan class=3D"p">,</span> <span class=3D"n">TCSAFLUSH</span><span class=3D"p=
+">,</span> <span class=3D"o">&amp;</span><span class=3D"n">raw</span><span =
+class=3D"p">);</span></div><div class=3D"line"><span class=3D"p">}</span></=
+div><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt"=
+>int</span> <span class=3D"nf">main</span><span class=3D"p">()</span> <span=
+ class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div></code></pr=
+e>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>IEXTEN</code> comes from <code>&lt;termios.h&gt;</code>. It is ano=
+ther flag that starts with <code>I</code> but
+belongs in the <code>c_lflag</code> field.</p>
+
+<p><kbd>Ctrl-V</kbd> can now be read as a <code>22</code> byte, and <kbd>Ct=
+rl-O</kbd> as a
+<code>15</code> byte.</p>
+<h2 id=3D"fix-ctrl-m"><a href=3D"https://viewsourcecode.org/snaptoken/kilo/=
+02.enteringRawMode.html#fix-ctrl-m">Fix <kbd>Ctrl-M</kbd></a></h2>
+
+<p>If you run the program now and go through the whole alphabet while holdi=
+ng down
+<kbd>Ctrl</kbd>, you should see that we have every letter except <kbd>M</kb=
+d>.
+<kbd>Ctrl-M</kbd> is weird: it=E2=80=99s being read as <code>10</code>, whe=
+n we expect it to be
+read as <code>13</code>, since it is the 13th letter of the alphabet, and
+<kbd>Ctrl-J</kbd> already produces a <code>10</code>. What else produces <c=
+ode>10</code>? The
+<kbd>Enter</kbd> key does.</p>
+
+<p>It turns out that the terminal is helpfully translating any carriage ret=
+urns
+(<code>13</code>, <code>'\r'</code>) inputted by the user into newlines (<c=
+ode>10</code>, <code>'\n'</code>). Let=E2=80=99s turn
+off this feature.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/icrnl/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 12</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/icrnl">icrnl</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></div><div class=3D"line"><span class=3D"cp=
+">#include &lt;stdio.h&gt;</span></div><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D=
+"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">vo=
+id</span> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><div class=3D"line"><span class=3D"kt">void</span> <=
+span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <span cla=
+ss=3D"p">{</span></div><div class=3D"line">  <span class=3D"n">tcgetattr</s=
+pan><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span cl=
+ass=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">orig_ter=
+mios</span><span class=3D"p">);</span></div><div class=3D"line">  <span cla=
+ss=3D"n">atexit</span><span class=3D"p">(</span><span class=3D"n">disableRa=
+wMode</span><span class=3D"p">);</span></div><div class=3D"line"></div><div=
+ class=3D"line">  <span class=3D"k">struct</span> <span class=3D"n">termios=
+</span> <span class=3D"n">raw</span> <span class=3D"o">=3D</span> <span cla=
+ss=3D"n">orig_termios</span><span class=3D"p">;</span></div><ins class=3D"l=
+ine">  <span class=3D"n">raw</span><span class=3D"p">.</span><span class=3D=
+"n">c_iflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</s=
+pan><span class=3D"p">(</span><span class=3D"n">ICRNL</span> <span class=3D=
+"o">|</span> <span class=3D"n">IXON</span><span class=3D"p">);</span></ins>=
+<div class=3D"line">  <span class=3D"n">raw</span><span class=3D"p">.</span=
+><span class=3D"n">c_lflag</span> <span class=3D"o">&amp;=3D</span> <span c=
+lass=3D"o">~</span><span class=3D"p">(</span><span class=3D"n">ECHO</span> =
+<span class=3D"o">|</span> <span class=3D"n">ICANON</span> <span class=3D"o=
+">|</span> <span class=3D"n">IEXTEN</span> <span class=3D"o">|</span> <span=
+ class=3D"n">ISIG</span><span class=3D"p">);</span></div><div class=3D"line=
+"></div><div class=3D"line">  <span class=3D"n">tcsetattr</span><span class=
+=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span class=3D"p">,</sp=
+an> <span class=3D"n">TCSAFLUSH</span><span class=3D"p">,</span> <span clas=
+s=3D"o">&amp;</span><span class=3D"n">raw</span><span class=3D"p">);</span>=
+</div><div class=3D"line"><span class=3D"p">}</span></div><div class=3D"lin=
+e"></div><div class=3D"line folded"><span class=3D"kt">int</span> <span cla=
+ss=3D"nf">main</span><span class=3D"p">()</span> <span class=3D"p">{</span>=
+ =E2=80=A6 <span class=3D"p">}</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>ICRNL</code> comes from <code>&lt;termios.h&gt;</code>. The <code>=
+I</code> stands for =E2=80=9Cinput flag=E2=80=9D, <code>CR</code> stands
+for =E2=80=9Ccarriage return=E2=80=9D, and <code>NL</code> stands for =E2=
+=80=9Cnew line=E2=80=9D.</p>
+
+<p>Now <kbd>Ctrl-M</kbd> is read as a <code>13</code> (carriage return), an=
+d the
+<kbd>Enter</kbd> key is also read as a <code>13</code>.</p>
+<h2 id=3D"turn-off-all-output-processing"><a href=3D"https://viewsourcecode=
+.org/snaptoken/kilo/02.enteringRawMode.html#turn-off-all-output-processing"=
+>Turn off all output processing</a></h2>
+
+<p>It turns out that the terminal does a similar translation on the output =
+side.
+It translates each newline (<code>"\n"</code>) we print into a carriage ret=
+urn followed by
+a newline (<code>"\r\n"</code>). The terminal requires both of these charac=
+ters in order
+to start a new line of text. The carriage return moves the cursor back to t=
+he
+beginning of the current line, and the newline moves the cursor down a line=
+,
+scrolling the screen if necessary. (These two distinct operations originate=
+d in
+the days of typewriters and
+<a href=3D"https://en.wikipedia.org/wiki/Teleprinter">teletypes</a>.)</p>
+
+<p>We will turn off all output processing features by turning off the <code=
+>OPOST</code>
+flag. In practice, the <code>"\n"</code> to <code>"\r\n"</code> translation=
+ is likely the only output
+processing feature turned on by default.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/opost/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 13</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/opost">opost</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></div><div class=3D"line"><span class=3D"cp=
+">#include &lt;stdio.h&gt;</span></div><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D=
+"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">vo=
+id</span> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><div class=3D"line"><span class=3D"kt">void</span> <=
+span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <span cla=
+ss=3D"p">{</span></div><div class=3D"line">  <span class=3D"n">tcgetattr</s=
+pan><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span cl=
+ass=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">orig_ter=
+mios</span><span class=3D"p">);</span></div><div class=3D"line">  <span cla=
+ss=3D"n">atexit</span><span class=3D"p">(</span><span class=3D"n">disableRa=
+wMode</span><span class=3D"p">);</span></div><div class=3D"line"></div><div=
+ class=3D"line">  <span class=3D"k">struct</span> <span class=3D"n">termios=
+</span> <span class=3D"n">raw</span> <span class=3D"o">=3D</span> <span cla=
+ss=3D"n">orig_termios</span><span class=3D"p">;</span></div><div class=3D"l=
+ine">  <span class=3D"n">raw</span><span class=3D"p">.</span><span class=3D=
+"n">c_iflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</s=
+pan><span class=3D"p">(</span><span class=3D"n">ICRNL</span> <span class=3D=
+"o">|</span> <span class=3D"n">IXON</span><span class=3D"p">);</span></div>=
+<ins class=3D"line">  <span class=3D"n">raw</span><span class=3D"p">.</span=
+><span class=3D"n">c_oflag</span> <span class=3D"o">&amp;=3D</span> <span c=
+lass=3D"o">~</span><span class=3D"p">(</span><span class=3D"n">OPOST</span>=
+<span class=3D"p">);</span></ins><div class=3D"line">  <span class=3D"n">ra=
+w</span><span class=3D"p">.</span><span class=3D"n">c_lflag</span> <span cl=
+ass=3D"o">&amp;=3D</span> <span class=3D"o">~</span><span class=3D"p">(</sp=
+an><span class=3D"n">ECHO</span> <span class=3D"o">|</span> <span class=3D"=
+n">ICANON</span> <span class=3D"o">|</span> <span class=3D"n">IEXTEN</span>=
+ <span class=3D"o">|</span> <span class=3D"n">ISIG</span><span class=3D"p">=
+);</span></div><div class=3D"line"></div><div class=3D"line">  <span class=
+=3D"n">tcsetattr</span><span class=3D"p">(</span><span class=3D"n">STDIN_FI=
+LENO</span><span class=3D"p">,</span> <span class=3D"n">TCSAFLUSH</span><sp=
+an class=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">raw=
+</span><span class=3D"p">);</span></div><div class=3D"line"><span class=3D"=
+p">}</span></div><div class=3D"line"></div><div class=3D"line folded"><span=
+ class=3D"kt">int</span> <span class=3D"nf">main</span><span class=3D"p">()=
+</span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></di=
+v></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>OPOST</code> comes from <code>&lt;termios.h&gt;</code>. <code>O</c=
+ode> means it=E2=80=99s an output flag, and I assume
+<code>POST</code> stands for =E2=80=9Cpost-processing of output=E2=80=9D.</=
+p>
+
+<p>If you run the program now, you=E2=80=99ll see that the newline characte=
+rs we=E2=80=99re
+printing are only moving the cursor down, and not to the left side of the
+screen. To fix that, let=E2=80=99s add carriage returns to our <code>printf=
+()</code> statements.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/carriage-returns/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 14</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/carriage-returns">carriage-returns</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></div><div class=3D"line"><span class=3D"cp=
+">#include &lt;stdio.h&gt;</span></div><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D=
+"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">vo=
+id</span> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">void</=
+span> <span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <s=
+pan class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><div cla=
+ss=3D"line"></div><div class=3D"line"><span class=3D"kt">int</span> <span c=
+lass=3D"nf">main</span><span class=3D"p">()</span> <span class=3D"p">{</spa=
+n></div><div class=3D"line">  <span class=3D"n">enableRawMode</span><span c=
+lass=3D"p">();</span></div><div class=3D"line"></div><div class=3D"line">  =
+<span class=3D"kt">char</span> <span class=3D"n">c</span><span class=3D"p">=
+;</span></div><div class=3D"line">  <span class=3D"k">while</span> <span cl=
+ass=3D"p">(</span><span class=3D"n">read</span><span class=3D"p">(</span><s=
+pan class=3D"n">STDIN_FILENO</span><span class=3D"p">,</span> <span class=
+=3D"o">&amp;</span><span class=3D"n">c</span><span class=3D"p">,</span> <sp=
+an class=3D"mi">1</span><span class=3D"p">)</span> <span class=3D"o">=3D=3D=
+</span> <span class=3D"mi">1</span> <span class=3D"o">&amp;&amp;</span> <sp=
+an class=3D"n">c</span> <span class=3D"o">!=3D</span> <span class=3D"sc">'q=
+'</span><span class=3D"p">)</span> <span class=3D"p">{</span></div><div cla=
+ss=3D"line">    <span class=3D"k">if</span> <span class=3D"p">(</span><span=
+ class=3D"n">iscntrl</span><span class=3D"p">(</span><span class=3D"n">c</s=
+pan><span class=3D"p">))</span> <span class=3D"p">{</span></div><ins class=
+=3D"line">      <span class=3D"n">printf</span><span class=3D"p">(</span><s=
+pan class=3D"s">"%d</span><span class=3D"se">\r\n</span><span class=3D"s">"=
+</span><span class=3D"p">,</span> <span class=3D"n">c</span><span class=3D"=
+p">);</span></ins><div class=3D"line">    <span class=3D"p">}</span> <span =
+class=3D"k">else</span> <span class=3D"p">{</span></div><ins class=3D"line"=
+>      <span class=3D"n">printf</span><span class=3D"p">(</span><span class=
+=3D"s">"%d ('%c')</span><span class=3D"se">\r\n</span><span class=3D"s">"</=
+span><span class=3D"p">,</span> <span class=3D"n">c</span><span class=3D"p"=
+>,</span> <span class=3D"n">c</span><span class=3D"p">);</span></ins><div c=
+lass=3D"line">    <span class=3D"p">}</span></div><div class=3D"line">  <sp=
+an class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"line">=
+  <span class=3D"k">return</span> <span class=3D"mi">0</span><span class=3D=
+"p">;</span></div><div class=3D"line"><span class=3D"p">}</span></div></cod=
+e></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p>From now on, we=E2=80=99ll have to write out the full <code>"\r\n"</code=
+> whenever we want
+to start a new line.</p>
+<h2 id=3D"miscellaneous-flags"><a href=3D"https://viewsourcecode.org/snapto=
+ken/kilo/02.enteringRawMode.html#miscellaneous-flags">Miscellaneous flags</=
+a></h2>
+
+<p>Let=E2=80=99s turn off a few more flags.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/misc-flags/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 15</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/misc-flags">misc-flags</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></div><div class=3D"line"><span class=3D"cp=
+">#include &lt;stdio.h&gt;</span></div><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D=
+"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">vo=
+id</span> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><div class=3D"line"><span class=3D"kt">void</span> <=
+span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <span cla=
+ss=3D"p">{</span></div><div class=3D"line">  <span class=3D"n">tcgetattr</s=
+pan><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span cl=
+ass=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">orig_ter=
+mios</span><span class=3D"p">);</span></div><div class=3D"line">  <span cla=
+ss=3D"n">atexit</span><span class=3D"p">(</span><span class=3D"n">disableRa=
+wMode</span><span class=3D"p">);</span></div><div class=3D"line"></div><div=
+ class=3D"line">  <span class=3D"k">struct</span> <span class=3D"n">termios=
+</span> <span class=3D"n">raw</span> <span class=3D"o">=3D</span> <span cla=
+ss=3D"n">orig_termios</span><span class=3D"p">;</span></div><ins class=3D"l=
+ine">  <span class=3D"n">raw</span><span class=3D"p">.</span><span class=3D=
+"n">c_iflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</s=
+pan><span class=3D"p">(</span><span class=3D"n">BRKINT</span> <span class=
+=3D"o">|</span> <span class=3D"n">ICRNL</span> <span class=3D"o">|</span> <=
+span class=3D"n">INPCK</span> <span class=3D"o">|</span> <span class=3D"n">=
+ISTRIP</span> <span class=3D"o">|</span> <span class=3D"n">IXON</span><span=
+ class=3D"p">);</span></ins><div class=3D"line">  <span class=3D"n">raw</sp=
+an><span class=3D"p">.</span><span class=3D"n">c_oflag</span> <span class=
+=3D"o">&amp;=3D</span> <span class=3D"o">~</span><span class=3D"p">(</span>=
+<span class=3D"n">OPOST</span><span class=3D"p">);</span></div><ins class=
+=3D"line">  <span class=3D"n">raw</span><span class=3D"p">.</span><span cla=
+ss=3D"n">c_cflag</span> <span class=3D"o">|=3D</span> <span class=3D"p">(</=
+span><span class=3D"n">CS8</span><span class=3D"p">);</span></ins><div clas=
+s=3D"line">  <span class=3D"n">raw</span><span class=3D"p">.</span><span cl=
+ass=3D"n">c_lflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o=
+">~</span><span class=3D"p">(</span><span class=3D"n">ECHO</span> <span cla=
+ss=3D"o">|</span> <span class=3D"n">ICANON</span> <span class=3D"o">|</span=
+> <span class=3D"n">IEXTEN</span> <span class=3D"o">|</span> <span class=3D=
+"n">ISIG</span><span class=3D"p">);</span></div><div class=3D"line"></div><=
+div class=3D"line">  <span class=3D"n">tcsetattr</span><span class=3D"p">(<=
+/span><span class=3D"n">STDIN_FILENO</span><span class=3D"p">,</span> <span=
+ class=3D"n">TCSAFLUSH</span><span class=3D"p">,</span> <span class=3D"o">&=
+amp;</span><span class=3D"n">raw</span><span class=3D"p">);</span></div><di=
+v class=3D"line"><span class=3D"p">}</span></div><div class=3D"line"></div>=
+<div class=3D"line folded"><span class=3D"kt">int</span> <span class=3D"nf"=
+>main</span><span class=3D"p">()</span> <span class=3D"p">{</span> =E2=80=
+=A6 <span class=3D"p">}</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c1">=E2=99=8E=EF=B8=8E compiles, but with no obser=
+vable effects</div>
+</div>
+</div>
+
+
+<p><code>BRKINT</code>, <code>INPCK</code>, <code>ISTRIP</code>, and <code>=
+CS8</code> all come from <code>&lt;termios.h&gt;</code>.</p>
+
+<p>This step probably won=E2=80=99t have any observable effect for you, bec=
+ause these
+flags are either already turned off, or they don=E2=80=99t really apply to =
+modern
+terminal emulators. But at one time or another, switching them off was
+considered (by someone) to be part of enabling =E2=80=9Craw mode=E2=80=9D, =
+so we carry on the
+tradition (of whoever that someone was) in our program.</p>
+
+<p>As far as I can tell:</p>
+
+<ul>
+<li>When <code>BRKINT</code> is turned on, a
+<a href=3D"https://www.cmrr.umn.edu/%7Estrupp/serial.html#2_3_3">break cond=
+ition</a> will
+cause a <code>SIGINT</code> signal to be sent to the program, like pressing=
+ <code>Ctrl-C</code>.</li>
+<li><code>INPCK</code> enables parity checking, which doesn=E2=80=99t seem =
+to apply to modern
+terminal emulators.</li>
+<li><code>ISTRIP</code> causes the 8th bit of each input byte to be strippe=
+d, meaning it
+will set it to <code>0</code>. This is probably already turned off.</li>
+<li><code>CS8</code> is not a flag, it is a bit mask with multiple bits, wh=
+ich we set using
+the bitwise-OR (<code>|</code>) operator unlike all the flags we are turnin=
+g off. It
+sets the character size (CS) to 8 bits per byte. On my system, it=E2=80=99s=
+ already
+set that way.</li>
+</ul>
+<h2 id=3D"a-timeout-for-read"><a href=3D"https://viewsourcecode.org/snaptok=
+en/kilo/02.enteringRawMode.html#a-timeout-for-read">A timeout for <code>rea=
+d()</code></a></h2>
+
+<p>Currently, <code>read()</code> will wait indefinitely for input from the=
+ keyboard before
+it returns. What if we want to do something like animate something on the
+screen while waiting for user input? We can set a timeout, so that <code>re=
+ad()</code>
+returns if it doesn=E2=80=99t get any input for a certain amount of time.</=
+p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/vmin-vtime/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 16</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/vmin-vtime">vmin-vtime</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></div><div class=3D"line"><span class=3D"cp=
+">#include &lt;stdio.h&gt;</span></div><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D=
+"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt">vo=
+id</span> <span class=3D"nf">disableRawMode</span><span class=3D"p">()</spa=
+n> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</span></div><di=
+v class=3D"line"></div><div class=3D"line"><span class=3D"kt">void</span> <=
+span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <span cla=
+ss=3D"p">{</span></div><div class=3D"line">  <span class=3D"n">tcgetattr</s=
+pan><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span cl=
+ass=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">orig_ter=
+mios</span><span class=3D"p">);</span></div><div class=3D"line">  <span cla=
+ss=3D"n">atexit</span><span class=3D"p">(</span><span class=3D"n">disableRa=
+wMode</span><span class=3D"p">);</span></div><div class=3D"line"></div><div=
+ class=3D"line">  <span class=3D"k">struct</span> <span class=3D"n">termios=
+</span> <span class=3D"n">raw</span> <span class=3D"o">=3D</span> <span cla=
+ss=3D"n">orig_termios</span><span class=3D"p">;</span></div><div class=3D"l=
+ine">  <span class=3D"n">raw</span><span class=3D"p">.</span><span class=3D=
+"n">c_iflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</s=
+pan><span class=3D"p">(</span><span class=3D"n">BRKINT</span> <span class=
+=3D"o">|</span> <span class=3D"n">ICRNL</span> <span class=3D"o">|</span> <=
+span class=3D"n">INPCK</span> <span class=3D"o">|</span> <span class=3D"n">=
+ISTRIP</span> <span class=3D"o">|</span> <span class=3D"n">IXON</span><span=
+ class=3D"p">);</span></div><div class=3D"line">  <span class=3D"n">raw</sp=
+an><span class=3D"p">.</span><span class=3D"n">c_oflag</span> <span class=
+=3D"o">&amp;=3D</span> <span class=3D"o">~</span><span class=3D"p">(</span>=
+<span class=3D"n">OPOST</span><span class=3D"p">);</span></div><div class=
+=3D"line">  <span class=3D"n">raw</span><span class=3D"p">.</span><span cla=
+ss=3D"n">c_cflag</span> <span class=3D"o">|=3D</span> <span class=3D"p">(</=
+span><span class=3D"n">CS8</span><span class=3D"p">);</span></div><div clas=
+s=3D"line">  <span class=3D"n">raw</span><span class=3D"p">.</span><span cl=
+ass=3D"n">c_lflag</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o=
+">~</span><span class=3D"p">(</span><span class=3D"n">ECHO</span> <span cla=
+ss=3D"o">|</span> <span class=3D"n">ICANON</span> <span class=3D"o">|</span=
+> <span class=3D"n">IEXTEN</span> <span class=3D"o">|</span> <span class=3D=
+"n">ISIG</span><span class=3D"p">);</span></div><ins class=3D"line">  <span=
+ class=3D"n">raw</span><span class=3D"p">.</span><span class=3D"n">c_cc</sp=
+an><span class=3D"p">[</span><span class=3D"n">VMIN</span><span class=3D"p"=
+>]</span> <span class=3D"o">=3D</span> <span class=3D"mi">0</span><span cla=
+ss=3D"p">;</span></ins><ins class=3D"line">  <span class=3D"n">raw</span><s=
+pan class=3D"p">.</span><span class=3D"n">c_cc</span><span class=3D"p">[</s=
+pan><span class=3D"n">VTIME</span><span class=3D"p">]</span> <span class=3D=
+"o">=3D</span> <span class=3D"mi">1</span><span class=3D"p">;</span></ins><=
+div class=3D"line"></div><div class=3D"line">  <span class=3D"n">tcsetattr<=
+/span><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span =
+class=3D"p">,</span> <span class=3D"n">TCSAFLUSH</span><span class=3D"p">,<=
+/span> <span class=3D"o">&amp;</span><span class=3D"n">raw</span><span clas=
+s=3D"p">);</span></div><div class=3D"line"><span class=3D"p">}</span></div>=
+<div class=3D"line"></div><div class=3D"line"><span class=3D"kt">int</span>=
+ <span class=3D"nf">main</span><span class=3D"p">()</span> <span class=3D"p=
+">{</span></div><div class=3D"line">  <span class=3D"n">enableRawMode</span=
+><span class=3D"p">();</span></div><div class=3D"line"></div><ins class=3D"=
+line">  <span class=3D"k">while</span> <span class=3D"p">(</span><span clas=
+s=3D"mi">1</span><span class=3D"p">)</span> <span class=3D"p">{</span></ins=
+><ins class=3D"line">    <span class=3D"kt">char</span> <span class=3D"n">c=
+</span> <span class=3D"o">=3D</span> <span class=3D"sc">'\0'</span><span cl=
+ass=3D"p">;</span></ins><ins class=3D"line">    <span class=3D"n">read</spa=
+n><span class=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span clas=
+s=3D"p">,</span> <span class=3D"o">&amp;</span><span class=3D"n">c</span><s=
+pan class=3D"p">,</span> <span class=3D"mi">1</span><span class=3D"p">);</s=
+pan></ins><div class=3D"line">    <span class=3D"k">if</span> <span class=
+=3D"p">(</span><span class=3D"n">iscntrl</span><span class=3D"p">(</span><s=
+pan class=3D"n">c</span><span class=3D"p">))</span> <span class=3D"p">{</sp=
+an></div><div class=3D"line">      <span class=3D"n">printf</span><span cla=
+ss=3D"p">(</span><span class=3D"s">"%d</span><span class=3D"se">\r\n</span>=
+<span class=3D"s">"</span><span class=3D"p">,</span> <span class=3D"n">c</s=
+pan><span class=3D"p">);</span></div><div class=3D"line">    <span class=3D=
+"p">}</span> <span class=3D"k">else</span> <span class=3D"p">{</span></div>=
+<div class=3D"line">      <span class=3D"n">printf</span><span class=3D"p">=
+(</span><span class=3D"s">"%d ('%c')</span><span class=3D"se">\r\n</span><s=
+pan class=3D"s">"</span><span class=3D"p">,</span> <span class=3D"n">c</spa=
+n><span class=3D"p">,</span> <span class=3D"n">c</span><span class=3D"p">);=
+</span></div><div class=3D"line">    <span class=3D"p">}</span></div><ins c=
+lass=3D"line">    <span class=3D"k">if</span> <span class=3D"p">(</span><sp=
+an class=3D"n">c</span> <span class=3D"o">=3D=3D</span> <span class=3D"sc">=
+'q'</span><span class=3D"p">)</span> <span class=3D"k">break</span><span cl=
+ass=3D"p">;</span></ins><div class=3D"line">  <span class=3D"p">}</span></d=
+iv><div class=3D"line"></div><div class=3D"line">  <span class=3D"k">return=
+</span> <span class=3D"mi">0</span><span class=3D"p">;</span></div><div cla=
+ss=3D"line"><span class=3D"p">}</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>VMIN</code> and <code>VTIME</code> come from <code>&lt;termios.h&g=
+t;</code>. They are indexes into the <code>c_cc</code>
+field, which stands for =E2=80=9Ccontrol characters=E2=80=9D, an array of b=
+ytes that control
+various terminal settings.</p>
+
+<p>The <code>VMIN</code> value sets the minimum number of bytes of input ne=
+eded before
+<code>read()</code> can return. We set it to <code>0</code> so that <code>r=
+ead()</code> returns as soon as there
+is any input to be read. The <code>VTIME</code> value sets the maximum amou=
+nt of time to
+wait before <code>read()</code> returns. It is in tenths of a second, so we=
+ set it to 1/10
+of a second, or 100 milliseconds. If <code>read()</code> times out, it will=
+ return <code>0</code>,
+which makes sense because its usual return value is the number of bytes rea=
+d.</p>
+
+<p>When you run the program, you can see how often <code>read()</code> time=
+s out. If you
+don=E2=80=99t supply any input, <code>read()</code> returns without setting=
+ the <code>c</code> variable,
+which retains its <code>0</code> value and so you see <code>0</code>s getti=
+ng printed out. If you
+type really fast, you can see that <code>read()</code> returns right away a=
+fter each
+keypress, so it=E2=80=99s not like you can only read one keypress every ten=
+th of a
+second.</p>
+
+<p>If you=E2=80=99re using <strong>Bash on Windows</strong>, you may see th=
+at <code>read()</code> still blocks for
+input. It doesn=E2=80=99t seem to care about the <code>VTIME</code> value. =
+Fortunately, this won=E2=80=99t
+make too big a difference in our text editor, as we=E2=80=99ll be basically=
+ blocking
+for input anyways.</p>
+<h2 id=3D"error-handling"><a href=3D"https://viewsourcecode.org/snaptoken/k=
+ilo/02.enteringRawMode.html#error-handling">Error handling</a></h2>
+
+<p><code>enableRawMode()</code> now gets us fully into raw mode. It=E2=80=
+=99s time to clean up the
+code by adding some error handling.</p>
+
+<p>First, we=E2=80=99ll add a <code>die()</code> function that prints an er=
+ror message and exits the
+program.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/die/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 17</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/die">die</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></div><div class=3D"line"><span class=3D"cp=
+">#include &lt;stdio.h&gt;</span></div><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=3D=
+"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div><di=
+v class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termios<=
+/span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></div=
+><div class=3D"line"></div><ins class=3D"line"><span class=3D"kt">void</spa=
+n> <span class=3D"nf">die</span><span class=3D"p">(</span><span class=3D"k"=
+>const</span> <span class=3D"kt">char</span> <span class=3D"o">*</span><spa=
+n class=3D"n">s</span><span class=3D"p">)</span> <span class=3D"p">{</span>=
+</ins><ins class=3D"line">  <span class=3D"n">perror</span><span class=3D"p=
+">(</span><span class=3D"n">s</span><span class=3D"p">);</span></ins><ins c=
+lass=3D"line">  <span class=3D"n">exit</span><span class=3D"p">(</span><spa=
+n class=3D"mi">1</span><span class=3D"p">);</span></ins><ins class=3D"line"=
+><span class=3D"p">}</span></ins><div class=3D"line"></div><div class=3D"li=
+ne folded"><span class=3D"kt">void</span> <span class=3D"nf">disableRawMode=
+</span><span class=3D"p">()</span> <span class=3D"p">{</span> =E2=80=A6 <sp=
+an class=3D"p">}</span></div><div class=3D"line"></div><div class=3D"line f=
+olded"><span class=3D"kt">void</span> <span class=3D"nf">enableRawMode</spa=
+n><span class=3D"p">()</span> <span class=3D"p">{</span> =E2=80=A6 <span cl=
+ass=3D"p">}</span></div><div class=3D"line"></div><div class=3D"line folded=
+"><span class=3D"kt">int</span> <span class=3D"nf">main</span><span class=
+=3D"p">()</span> <span class=3D"p">{</span> =E2=80=A6 <span class=3D"p">}</=
+span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c1">=E2=99=8E=EF=B8=8E compiles, but with no obser=
+vable effects</div>
+</div>
+</div>
+
+
+<p><code>perror()</code> comes from <code>&lt;stdio.h&gt;</code>, and <code=
+>exit()</code> comes from <code>&lt;stdlib.h&gt;</code>.</p>
+
+<p>Most C library functions that fail will set the global <code>errno</code=
+> variable to
+indicate what the error was. <code>perror()</code> looks at the global <cod=
+e>errno</code> variable
+and prints a descriptive error message for it. It also prints the string gi=
+ven
+to it before it prints the error message, which is meant to provide context
+about what part of your code caused the error.</p>
+
+<p>After printing out the error message, we exit the program with an exit s=
+tatus
+of <code>1</code>, which indicates failure (as would any non-zero value).</=
+p>
+
+<p>Let=E2=80=99s check each of our library calls for failure, and call <cod=
+e>die()</code> when they
+fail.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/error-handling/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 18</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/error-handling">error-handling</a></div>
+</div><pre class=3D"highlight"><code><div class=3D"line"><span class=3D"cp"=
+>#include &lt;ctype.h&gt;</span></div><ins class=3D"line"><span class=3D"cp=
+">#include &lt;errno.h&gt;</span></ins><div class=3D"line"><span class=3D"c=
+p">#include &lt;stdio.h&gt;</span></div><div class=3D"line"><span class=3D"=
+cp">#include &lt;stdlib.h&gt;</span></div><div class=3D"line"><span class=
+=3D"cp">#include &lt;termios.h&gt;</span></div><div class=3D"line"><span cl=
+ass=3D"cp">#include &lt;unistd.h&gt;</span></div><div class=3D"line"></div>=
+<div class=3D"line"><span class=3D"k">struct</span> <span class=3D"n">termi=
+os</span> <span class=3D"n">orig_termios</span><span class=3D"p">;</span></=
+div><div class=3D"line"></div><div class=3D"line folded"><span class=3D"kt"=
+>void</span> <span class=3D"nf">die</span><span class=3D"p">(</span><span c=
+lass=3D"k">const</span> <span class=3D"kt">char</span> <span class=3D"o">*<=
+/span><span class=3D"n">s</span><span class=3D"p">)</span> <span class=3D"p=
+">{</span> =E2=80=A6 <span class=3D"p">}</span></div><div class=3D"line"></=
+div><div class=3D"line"><span class=3D"kt">void</span> <span class=3D"nf">d=
+isableRawMode</span><span class=3D"p">()</span> <span class=3D"p">{</span><=
+/div><ins class=3D"line">  <span class=3D"k">if</span> <span class=3D"p">(<=
+/span><span class=3D"n">tcsetattr</span><span class=3D"p">(</span><span cla=
+ss=3D"n">STDIN_FILENO</span><span class=3D"p">,</span> <span class=3D"n">TC=
+SAFLUSH</span><span class=3D"p">,</span> <span class=3D"o">&amp;</span><spa=
+n class=3D"n">orig_termios</span><span class=3D"p">)</span> <span class=3D"=
+o">=3D=3D</span> <span class=3D"o">-</span><span class=3D"mi">1</span><span=
+ class=3D"p">)</span></ins><ins class=3D"line">    <span class=3D"n">die</s=
+pan><span class=3D"p">(</span><span class=3D"s">"tcsetattr"</span><span cla=
+ss=3D"p">);</span></ins><div class=3D"line"><span class=3D"p">}</span></div=
+><div class=3D"line"></div><div class=3D"line"><span class=3D"kt">void</spa=
+n> <span class=3D"nf">enableRawMode</span><span class=3D"p">()</span> <span=
+ class=3D"p">{</span></div><ins class=3D"line">  <span class=3D"k">if</span=
+> <span class=3D"p">(</span><span class=3D"n">tcgetattr</span><span class=
+=3D"p">(</span><span class=3D"n">STDIN_FILENO</span><span class=3D"p">,</sp=
+an> <span class=3D"o">&amp;</span><span class=3D"n">orig_termios</span><spa=
+n class=3D"p">)</span> <span class=3D"o">=3D=3D</span> <span class=3D"o">-<=
+/span><span class=3D"mi">1</span><span class=3D"p">)</span> <span class=3D"=
+n">die</span><span class=3D"p">(</span><span class=3D"s">"tcgetattr"</span>=
+<span class=3D"p">);</span></ins><div class=3D"line">  <span class=3D"n">at=
+exit</span><span class=3D"p">(</span><span class=3D"n">disableRawMode</span=
+><span class=3D"p">);</span></div><div class=3D"line"></div><div class=3D"l=
+ine">  <span class=3D"k">struct</span> <span class=3D"n">termios</span> <sp=
+an class=3D"n">raw</span> <span class=3D"o">=3D</span> <span class=3D"n">or=
+ig_termios</span><span class=3D"p">;</span></div><div class=3D"line">  <spa=
+n class=3D"n">raw</span><span class=3D"p">.</span><span class=3D"n">c_iflag=
+</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</span><span c=
+lass=3D"p">(</span><span class=3D"n">BRKINT</span> <span class=3D"o">|</spa=
+n> <span class=3D"n">ICRNL</span> <span class=3D"o">|</span> <span class=3D=
+"n">INPCK</span> <span class=3D"o">|</span> <span class=3D"n">ISTRIP</span>=
+ <span class=3D"o">|</span> <span class=3D"n">IXON</span><span class=3D"p">=
+);</span></div><div class=3D"line">  <span class=3D"n">raw</span><span clas=
+s=3D"p">.</span><span class=3D"n">c_oflag</span> <span class=3D"o">&amp;=3D=
+</span> <span class=3D"o">~</span><span class=3D"p">(</span><span class=3D"=
+n">OPOST</span><span class=3D"p">);</span></div><div class=3D"line">  <span=
+ class=3D"n">raw</span><span class=3D"p">.</span><span class=3D"n">c_cflag<=
+/span> <span class=3D"o">|=3D</span> <span class=3D"p">(</span><span class=
+=3D"n">CS8</span><span class=3D"p">);</span></div><div class=3D"line">  <sp=
+an class=3D"n">raw</span><span class=3D"p">.</span><span class=3D"n">c_lfla=
+g</span> <span class=3D"o">&amp;=3D</span> <span class=3D"o">~</span><span =
+class=3D"p">(</span><span class=3D"n">ECHO</span> <span class=3D"o">|</span=
+> <span class=3D"n">ICANON</span> <span class=3D"o">|</span> <span class=3D=
+"n">IEXTEN</span> <span class=3D"o">|</span> <span class=3D"n">ISIG</span><=
+span class=3D"p">);</span></div><div class=3D"line">  <span class=3D"n">raw=
+</span><span class=3D"p">.</span><span class=3D"n">c_cc</span><span class=
+=3D"p">[</span><span class=3D"n">VMIN</span><span class=3D"p">]</span> <spa=
+n class=3D"o">=3D</span> <span class=3D"mi">0</span><span class=3D"p">;</sp=
+an></div><div class=3D"line">  <span class=3D"n">raw</span><span class=3D"p=
+">.</span><span class=3D"n">c_cc</span><span class=3D"p">[</span><span clas=
+s=3D"n">VTIME</span><span class=3D"p">]</span> <span class=3D"o">=3D</span>=
+ <span class=3D"mi">1</span><span class=3D"p">;</span></div><div class=3D"l=
+ine"></div><ins class=3D"line">  <span class=3D"k">if</span> <span class=3D=
+"p">(</span><span class=3D"n">tcsetattr</span><span class=3D"p">(</span><sp=
+an class=3D"n">STDIN_FILENO</span><span class=3D"p">,</span> <span class=3D=
+"n">TCSAFLUSH</span><span class=3D"p">,</span> <span class=3D"o">&amp;</spa=
+n><span class=3D"n">raw</span><span class=3D"p">)</span> <span class=3D"o">=
+=3D=3D</span> <span class=3D"o">-</span><span class=3D"mi">1</span><span cl=
+ass=3D"p">)</span> <span class=3D"n">die</span><span class=3D"p">(</span><s=
+pan class=3D"s">"tcsetattr"</span><span class=3D"p">);</span></ins><div cla=
+ss=3D"line"><span class=3D"p">}</span></div><div class=3D"line"></div><div =
+class=3D"line"><span class=3D"kt">int</span> <span class=3D"nf">main</span>=
+<span class=3D"p">()</span> <span class=3D"p">{</span></div><div class=3D"l=
+ine">  <span class=3D"n">enableRawMode</span><span class=3D"p">();</span></=
+div><div class=3D"line"></div><div class=3D"line">  <span class=3D"k">while=
+</span> <span class=3D"p">(</span><span class=3D"mi">1</span><span class=3D=
+"p">)</span> <span class=3D"p">{</span></div><div class=3D"line">    <span =
+class=3D"kt">char</span> <span class=3D"n">c</span> <span class=3D"o">=3D</=
+span> <span class=3D"sc">'\0'</span><span class=3D"p">;</span></div><ins cl=
+ass=3D"line">    <span class=3D"k">if</span> <span class=3D"p">(</span><spa=
+n class=3D"n">read</span><span class=3D"p">(</span><span class=3D"n">STDIN_=
+FILENO</span><span class=3D"p">,</span> <span class=3D"o">&amp;</span><span=
+ class=3D"n">c</span><span class=3D"p">,</span> <span class=3D"mi">1</span>=
+<span class=3D"p">)</span> <span class=3D"o">=3D=3D</span> <span class=3D"o=
+">-</span><span class=3D"mi">1</span> <span class=3D"o">&amp;&amp;</span> <=
+span class=3D"n">errno</span> <span class=3D"o">!=3D</span> <span class=3D"=
+n">EAGAIN</span><span class=3D"p">)</span> <span class=3D"n">die</span><spa=
+n class=3D"p">(</span><span class=3D"s">"read"</span><span class=3D"p">);</=
+span></ins><div class=3D"line">    <span class=3D"k">if</span> <span class=
+=3D"p">(</span><span class=3D"n">iscntrl</span><span class=3D"p">(</span><s=
+pan class=3D"n">c</span><span class=3D"p">))</span> <span class=3D"p">{</sp=
+an></div><div class=3D"line">      <span class=3D"n">printf</span><span cla=
+ss=3D"p">(</span><span class=3D"s">"%d</span><span class=3D"se">\r\n</span>=
+<span class=3D"s">"</span><span class=3D"p">,</span> <span class=3D"n">c</s=
+pan><span class=3D"p">);</span></div><div class=3D"line">    <span class=3D=
+"p">}</span> <span class=3D"k">else</span> <span class=3D"p">{</span></div>=
+<div class=3D"line">      <span class=3D"n">printf</span><span class=3D"p">=
+(</span><span class=3D"s">"%d ('%c')</span><span class=3D"se">\r\n</span><s=
+pan class=3D"s">"</span><span class=3D"p">,</span> <span class=3D"n">c</spa=
+n><span class=3D"p">,</span> <span class=3D"n">c</span><span class=3D"p">);=
+</span></div><div class=3D"line">    <span class=3D"p">}</span></div><div c=
+lass=3D"line">    <span class=3D"k">if</span> <span class=3D"p">(</span><sp=
+an class=3D"n">c</span> <span class=3D"o">=3D=3D</span> <span class=3D"sc">=
+'q'</span><span class=3D"p">)</span> <span class=3D"k">break</span><span cl=
+ass=3D"p">;</span></div><div class=3D"line">  <span class=3D"p">}</span></d=
+iv><div class=3D"line"></div><div class=3D"line">  <span class=3D"k">return=
+</span> <span class=3D"mi">0</span><span class=3D"p">;</span></div><div cla=
+ss=3D"line"><span class=3D"p">}</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c2">=E2=99=90=EF=B8=8E compiles</div>
+</div>
+</div>
+
+
+<p><code>errno</code> and <code>EAGAIN</code> come from <code>&lt;errno.h&g=
+t;</code>.</p>
+
+<p><code>tcsetattr()</code>, <code>tcgetattr()</code>, and <code>read()</co=
+de> all return <code>-1</code> on failure, and set
+the <code>errno</code> value to indicate the error.</p>
+
+<p>In Cygwin, when <code>read()</code> times out it returns <code>-1</code>=
+ with an <code>errno</code> of <code>EAGAIN</code>,
+instead of just returning <code>0</code> like it=E2=80=99s supposed to. To =
+make it work in Cygwin,
+we won=E2=80=99t treat <code>EAGAIN</code> as an error.</p>
+
+<p>An easy way to make <code>tcgetattr()</code> fail is to give your progra=
+m a text file or a
+pipe as the standard input instead of your terminal. To give it a file as
+standard input, run <code>./kilo &lt;kilo.c</code>. To give it a pipe, run
+<code>echo test | ./kilo</code>. Both should result in the same error from =
+<code>tcgetattr()</code>,
+something like <code>Inappropriate ioctl for device</code>.</p>
+<h2 id=3D"sections"><a href=3D"https://viewsourcecode.org/snaptoken/kilo/02=
+.enteringRawMode.html#sections">Sections</a></h2>
+
+<p>That just about concludes this chapter on entering raw mode. The last th=
+ing
+we=E2=80=99ll do now is split our code into sections. This will allow these=
+ diffs to be
+shorter, as each section that isn=E2=80=99t changed in a diff will be folde=
+d into a
+single line.</p>
+
+<div class=3D"diff">
+<div class=3D"diff-header">
+  <div class=3D"step-filename"><a href=3D"https://github.com/snaptoken/kilo=
+-src/blob/sections/kilo.c">kilo.c</a></div>
+  <div class=3D"step-number">Step 19</div>
+  <div class=3D"step-name"><a href=3D"https://github.com/snaptoken/kilo-src=
+/tree/sections">sections</a></div>
+</div><pre class=3D"highlight"><code><ins class=3D"line"><span class=3D"cm"=
+>/*** includes ***/</span></ins><div class=3D"line"></div><div class=3D"lin=
+e"><span class=3D"cp">#include &lt;ctype.h&gt;</span></div><div class=3D"li=
+ne"><span class=3D"cp">#include &lt;errno.h&gt;</span></div><div class=3D"l=
+ine"><span class=3D"cp">#include &lt;stdio.h&gt;</span></div><div class=3D"=
+line"><span class=3D"cp">#include &lt;stdlib.h&gt;</span></div><div class=
+=3D"line"><span class=3D"cp">#include &lt;termios.h&gt;</span></div><div cl=
+ass=3D"line"><span class=3D"cp">#include &lt;unistd.h&gt;</span></div><div =
+class=3D"line"></div><ins class=3D"line"><span class=3D"cm">/*** data ***/<=
+/span></ins><div class=3D"line"></div><div class=3D"line"><span class=3D"k"=
+>struct</span> <span class=3D"n">termios</span> <span class=3D"n">orig_term=
+ios</span><span class=3D"p">;</span></div><div class=3D"line"></div><ins cl=
+ass=3D"line"><span class=3D"cm">/*** terminal ***/</span></ins><div class=
+=3D"line"></div><div class=3D"line folded"><span class=3D"kt">void</span> <=
+span class=3D"nf">die</span><span class=3D"p">(</span><span class=3D"k">con=
+st</span> <span class=3D"kt">char</span> <span class=3D"o">*</span><span cl=
+ass=3D"n">s</span><span class=3D"p">)</span> <span class=3D"p">{</span> =E2=
+=80=A6 <span class=3D"p">}</span></div><div class=3D"line"></div><div class=
+=3D"line folded"><span class=3D"kt">void</span> <span class=3D"nf">disableR=
+awMode</span><span class=3D"p">()</span> <span class=3D"p">{</span> =E2=80=
+=A6 <span class=3D"p">}</span></div><div class=3D"line"></div><div class=3D=
+"line folded"><span class=3D"kt">void</span> <span class=3D"nf">enableRawMo=
+de</span><span class=3D"p">()</span> <span class=3D"p">{</span> =E2=80=A6 <=
+span class=3D"p">}</span></div><div class=3D"line"></div><ins class=3D"line=
+"><span class=3D"cm">/*** init ***/</span></ins><div class=3D"line"></div><=
+div class=3D"line folded"><span class=3D"kt">int</span> <span class=3D"nf">=
+main</span><span class=3D"p">()</span> <span class=3D"p">{</span> =E2=80=A6=
+ <span class=3D"p">}</span></div></code></pre>
+<div class=3D"diff-footer">
+  <div class=3D"diff-tag-c1">=E2=99=8E=EF=B8=8E compiles, but with no obser=
+vable effects</div>
+</div>
+</div>
+
+
+<p>In the <a href=3D"https://viewsourcecode.org/snaptoken/kilo/03.rawInputA=
+ndOutput.html">next chapter</a>, we=E2=80=99ll do some more low-level
+terminal input/output handling, and use that to draw to the screen and allo=
+w
+the user to move the cursor around.</p>
+
+    </div>
+    <div id=3D"version">
+      <a href=3D"https://github.com/snaptoken/kilo-tutorial/tree/v1.0.0beta=
+11">1.0.0beta11</a>
+      (<a href=3D"https://github.com/snaptoken/kilo-tutorial/blob/master/CH=
+ANGELOG.md">changelog</a>)
+    </div>
+    <footer class=3D"bar">
+      <nav>
+        <a href=3D"https://viewsourcecode.org/snaptoken/kilo/02.enteringRaw=
+Mode.html#">top of page</a>
+      </nav>
+    </footer>
+ =20
+
+
+</body><grammarly-desktop-integration data-grammarly-shadow-root=3D"true"><=
+template shadowmode=3D"open"><div aria-label=3D"grammarly-integration" role=
+=3D"group" tabindex=3D"-1" class=3D"grammarly-desktop-integration" data-con=
+tent=3D"{&quot;mode&quot;:&quot;full&quot;,&quot;isActive&quot;:true,&quot;=
+isUserDisabled&quot;:false}"></div></template></grammarly-desktop-integrati=
+on></html>
+------MultipartBoundary--36c6FriKl2T9Dih9V1dHFZMjUGZk1QXwGO4r5ENLB5----
+Content-Type: image/png
+Content-Transfer-Encoding: base64
+Content-Location: https://viewsourcecode.org/snaptoken/kilo/i/arrow.png
+
+iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAMFWlDQ1BJQ0MgUHJvZmlsZQAASImV
+VwdYU8kWnltSCEkogQhICb0jvQqEDoKAdLARkgChREgICnZlUcG1iwUruipiWwsgi4rYFRGw1wcq
+Ksq6WMCCypsU0PW1753vmzt/zpxz5j9zz53MAKBiz8nLy0FVAcgVFohiQvxZSckpLFIXwIAeoAN9
+QOJwxXl+0dERAMpw/3cZuAUQaX/dVhrrX8f/q6jx+GIuAEg0xGk8MTcX4qMA4FrcPFEBAIQWqDee
+XpAnxX0Qa4ggQQCIuBRnyLGWFKfJsY3MJi4mAGI2AGQqhyPKAIAu5c0q5GbAOHQpR3shTyCEeBPE
+PtxMDg/iBxDb5OZOg1iFDLFF2g9xMv4WM20kJoeTMYLluciEHCgQ5+Vwiv7P5fjfkpsjGZ7DCDZq
+pig0RpozXLc92dPCpZgKcaMwLTIKYnWILwp4MnspvpcpCY1X2PdyxQFwzQATABTwOIHhEOtCzJRk
+x/spsCNHJPOF9mikoCAsToHTRNNiFPHRQmFOZIQizuJMftgw3sIXB8UO26QLgsMghpWGHi3OjEuU
+80TPFgoSIiGmQ9wmzo4NV/g+Ks4MiBy2EUlipJxNIH6fLgqOkdtgWrni4bwwOy5HNhesBYxdkBkX
+KvfFkvjipIhhDjx+YJCcA8bjC+MV3DBYXf4xCt/SvJxohT22hZ8TEiNfZ+yQuDB22LejABaYfB2w
+x1mccdGKuQbyCqLj5NxwFESAABAIWEACWxqYBrKAoLW3rhf+ko8EAw4QgQzAB7YKzbBHomxECJ+x
+oBj8CREfiEf8/GWjfFAI9V9HtPKnLUiXjRbKPLLBM4hzcR3cB/fCI+CTDZsj7o57DPuxVIZnJQYR
+A4mhxGCi5QgPLmSdA5sICP6NLhz2fJidlItwOIfv8QjPCO2Ex4SbhE7CXZAAnsqiKKymChaIfmLO
+AuNBJ4wWrMgu7cfscDPI2gX3x70hf8gdZ+I6wBZ3hpn44b4wNxeo/ZGhZITb97X8eT4p6x/zUejp
+VnQXBYu0kTcTMGL1c5SAH9aIB/vwny2xxdgR7AJ2GruENWJ1gIWdwuqxFuyEFI9UwlNZJQzPFiPj
+lg3jCIZt7Gvse+y//DQ3RzG/dL3EBfwZBdKPIWBaXpFIkJFZwPKDuzGfFSbk2tmwHO0d3ACQ7u3y
+reMdU7ZnI8zL33X5TQB4lEFlxncdxxiA488AYAx81xm/heW+AoATbVyJqFCuk27HgAAoQAV+Fdrw
+f8MYWMB8HIEr8AJsEATGgSgQB5LBFLjimSAXcp4OZoH5oBSUgxVgLdgItoIdYA/YDw6DOtAIToPz
+4ApoAzfBfVgX3eAV6AMDYBBBEBJCQxiINmKAmCLWiCPijvggQUgEEoMkI6lIBiJEJMgsZCFSjqxC
+NiLbkWrkd+Q4chq5hLQjd5EupAd5i3xGMZSKaqB6qBk6BnVH/dBwNA6djGag+WgxWoIuQ9ejVeg+
+tBY9jV5Bb6Kd6Cu0HwOYMsbEDDFbzB0LwKKwFCwdE2FzsDKsAqvCDmAN8D1fxzqxXuwTTsQZOAu3
+hbUZisfjXDwfn4MvxTfie/Ba/Cx+He/C+/BvBBpBl2BN8CSEEZIIGYTphFJCBWEX4RjhHPxuugkD
+RCKRSTQnusHvMpmYRZxJXErcTDxIbCK2E58Q+0kkkjbJmuRNiiJxSAWkUtIG0j7SKVIHqZv0kaxM
+NiA7koPJKWQheQG5gryXfJLcQX5OHlRSVTJV8lSKUuIpFSktV9qp1KB0TalbaZCiRjGneFPiKFmU
++ZT1lAOUc5QHlHfKyspGyh7KE5QFyvOU1ysfUr6o3KX8iapOtaIGUCdRJdRl1N3UJupd6jsajWZG
+Y9NSaAW0ZbRq2hnaI9pHOoNuRw+j8+hz6ZX0WnoH/bWKkoqpip/KFJVilQqVIyrXVHpVlVTNVANU
+OapzVCtVj6veVu1XY6g5qEWp5aotVdurdknthTpJ3Uw9SJ2nXqK+Q/2M+hMGxjBmBDC4jIWMnYxz
+jG4Nooa5RphGlka5xn6NVo0+TXVNZ80EzRmalZonNDuZGNOMGcbMYS5nHmbeYn4epTfKbxR/1JJR
+B0Z1jPqgNVqLrcXXKtM6qHVT67M2SztIO1t7pXad9kMdXMdKZ4LOdJ0tOud0ekdrjPYazR1dNvrw
+6Hu6qK6VbozuTN0dui26/Xr6eiF6eXob9M7o9eoz9dn6Wfpr9E/q9xgwDHwMBAZrDE4ZvGRpsvxY
+Oaz1rLOsPkNdw1BDieF2w1bDQSNzo3ijBUYHjR4aU4zdjdON1xg3G/eZGJiMN5llUmNyz1TJ1N00
+03Sd6QXTD2bmZolmi8zqzF6Ya5mHmReb15g/sKBZ+FrkW1RZ3LAkWrpbZltutmyzQq1crDKtKq2u
+WaPWrtYC683W7TYEGw8boU2VzW1bqq2fbaFtjW2XHdMuwm6BXZ3d6zEmY1LGrBxzYcw3exf7HPud
+9vcd1B3GOSxwaHB462jlyHWsdLzhRHMKdprrVO/0xtname+8xfmOC8NlvMsil2aXr65uriLXA649
+biZuqW6b3G67a7hHuy91v+hB8PD3mOvR6PHJ09WzwPOw519etl7ZXnu9Xow1H8sfu3PsE28jb473
+du9OH5ZPqs82n05fQ1+Ob5XvY7Yxm8fexX7uZ+mX5bfP77W/vb/I/5j/hwDPgNkBTYFYYEhgWWBr
+kHpQfNDGoEfBRsEZwTXBfSEuITNDmkIJoeGhK0Nvh+mFccOqw/rGuY2bPe5sODU8Nnxj+OMIqwhR
+RMN4dPy48avHP4g0jRRG1kWBqLCo1VEPo82j86P/mECcED2hcsKzGIeYWTEXYhmxU2P3xg7E+cct
+j7sfbxEviW9OUEmYlFCd8CExMHFVYmfSmKTZSVeSdZIFyfUppJSElF0p/RODJq6d2D3JZVLppFuT
+zSfPmHxpis6UnCknpqpM5Uw9kkpITUzdm/qFE8Wp4vSnhaVtSuvjBnDXcV/x2Lw1vB6+N38V/3m6
+d/qq9BcZ3hmrM3oyfTMrMnsFAYKNgjdZoVlbsz5kR2Xvzh7KScw5mEvOTc09LlQXZgvPTtOfNmNa
+e551XmleZ75n/tr8PlG4aJcYEU8W1xdowGNOi8RC8oukq9CnsLLw4/SE6UdmqM0QzmgpsipaUvS8
+OLj4t5n4TO7M5lmGs+bP6prtN3v7HGRO2pzmucZzS+Z2zwuZt2c+ZX72/KsL7BesWvB+YeLChhK9
+knklT34J+aWmlF4qKr29yGvR1sX4YsHi1iVOSzYs+VbGK7tcbl9eUf5lKXfp5V8dfl3/69Cy9GWt
+y12Xb1lBXCFccWul78o9q9RWFa96snr86to1rDVla96vnbr2UoVzxdZ1lHWSdZ3rI9bXbzDZsGLD
+l42ZG29W+lce3KS7acmmD5t5mzu2sLcc2Kq3tXzr522CbXe2h2yvrTKrqthB3FG449nOhJ0XfnP/
+rXqXzq7yXV93C3d37onZc7barbp6r+7e5TVojaSmZ9+kfW37A/fXH7A9sP0g82D5IXBIcujl76m/
+3zocfrj5iPuRA0dNj246xjhWVovUFtX21WXWddYn17cfH3e8ucGr4dgfdn/sbjRsrDyheWL5ScrJ
+kpNDp4pP9TflNfWezjj9pHlq8/0zSWdunJ1wtvVc+LmL54PPn7ngd+HURe+LjZc8Lx2/7H657orr
+ldoWl5ZjV12uHmt1ba295natvs2jraF9bPvJDt+O09cDr5+/EXbjys3Im+234m/duT3pducd3p0X
+d3PuvrlXeG/w/rwHhAdlD1UfVjzSfVT1D8t/HOx07TzRFdjV8jj28f0n3CevnoqffukueUZ7VvHc
+4Hn1C8cXjT3BPW0vJ77sfpX3arC39E+1Pze9tnh99C/2Xy19SX3db0Rvht4ufaf9bvd75/fN/dH9
+jwZyBwY/lH3U/rjnk/unC58TPz8fnP6F9GX9V8uvDd/Cvz0Yyh0ayuOIOLKjAAYbmp4OwNvdANCS
+4dmhDQAKXX73kgkivy/KEPhPWH4/k4krALvZAMTPAyACnlG2wGYKMRX20qN3HBugTk4jTSHidCdH
+eSwqvMEQPg4NvdMDgNQAwFfR0NDg5qGhrzsh2bsANOXL73xSIcLz/TbZOeeqcVEg+En+Cd8+bBGE
++qe9AAAACXBIWXMAABYlAAAWJQFJUiTwAAACBGlUWHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6
+eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAi
+PgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRm
+LXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAg
+ICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyIKICAgICAgICAg
+ICAgeG1sbnM6dGlmZj0iaHR0cDovL25zLmFkb2JlLmNvbS90aWZmLzEuMC8iPgogICAgICAgICA8
+ZXhpZjpQaXhlbFlEaW1lbnNpb24+NTg0PC9leGlmOlBpeGVsWURpbWVuc2lvbj4KICAgICAgICAg
+PGV4aWY6UGl4ZWxYRGltZW5zaW9uPjE1ODwvZXhpZjpQaXhlbFhEaW1lbnNpb24+CiAgICAgICAg
+IDx0aWZmOk9yaWVudGF0aW9uPjE8L3RpZmY6T3JpZW50YXRpb24+CiAgICAgIDwvcmRmOkRlc2Ny
+aXB0aW9uPgogICA8L3JkZjpSREY+CjwveDp4bXBtZXRhPgrYaV7IAAABPklEQVRYCWP8DwQMgxgw
+DWK3gZ026kBKY2g0BEdDkNIQoFT/aBocDUFKQ4BS/aNpcDQEKQ0BSvWTnwZ/PmN48OwzpfYT1E+e
+Az+fZci19mMIqTrG8JOgFRQqALWoSQGf7u/4H2ls/N/YOP7/mU+k6CRPLQvx/vvMcGByFUPJwuNQ
+Lc8ZHhzbzPDgyy+ijfgJDG5j32AGdV6itTCQ5MDLx2GOA1nwlmHt8uUMb5+/Jdq2t2+FGVqtfIAO
+ZCdaDwOpAX9/xyRg9IKiuPL//R+k6iZdPckOBFnx6dIaiCNbj5JuI4k6SIhiRKzw6gYz7JjPw7Dr
+mTBCkEYsRpCHaGQ2VYwlrxykitXEGTLqQOLCCbeq0RDEHTbEyYyGIHHhhFvVaAjiDhviZEZDkLhw
+wq1qNARxhw1xMqMhSFw44VYFAJIg/q91M+6jAAAAAElFTkSuQmCC
+
+------MultipartBoundary--36c6FriKl2T9Dih9V1dHFZMjUGZk1QXwGO4r5ENLB5----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://fonts.googleapis.com/css?family=PT+Serif:400,400i,700|Work+Sans:700|Fira+Mono:400,500
+
+@charset "utf-8";
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgK_=
+7Ss9XZYalI.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C8A, =
+U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgIv=
+7Ss9XZYalI.woff2") format("woff2"); unicode-range: U+301, U+400-45F, U+490-=
+491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgKv=
+7Ss9XZYalI.woff2") format("woff2"); unicode-range: U+1F00-1FFF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgJf=
+7Ss9XZYalI.woff2") format("woff2"); unicode-range: U+370-377, U+37A-37F, U+=
+384-38A, U+38C, U+38E-3A1, U+3A3-3FF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgnN=
+_3nP3TaZFxBQ.woff2") format("woff2"); unicode-range: U+2000-2001, U+2004-20=
+08, U+200A, U+23B8-23BD, U+2500-259F; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgKP=
+7Ss9XZYalI.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+=
+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9=
+F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A7=
+20-A7FF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 400=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bX2SlFPv1weGeLZDtgJv=
+7Ss9XZYQ.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, =
+U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U=
++2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3Hk_fUS5NBBASF.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C=
+8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HmvfUS5NBBASF.woff2") format("woff2"); unicode-range: U+301, U+400-45F, U+=
+490-491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HkvfUS5NBBASF.woff2") format("woff2"); unicode-range: U+1F00-1FFF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HnffUS5NBBASF.woff2") format("woff2"); unicode-range: U+370-377, U+37A-37F=
+, U+384-38A, U+38C, U+38E-3A1, U+3A3-3FF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HJNbxZLtLDDy8Rg.woff2") format("woff2"); unicode-range: U+2000-2001, U+200=
+4-2008, U+200A, U+23B8-23BD, U+2500-259F; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HkPfUS5NBBASF.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5=
+, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00=
+-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, =
+U+A720-A7FF; }
+
+@font-face { font-family: "Fira Mono"; font-style: normal; font-weight: 500=
+; src: url("https://fonts.gstatic.com/s/firamono/v16/N0bS2SlFPv1weGeLZDto1d=
+3HnvfUS5NBBA.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-1=
+53, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20A=
+C, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "PT Serif"; font-style: italic; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRTQgYoZZY2vCFuvAFT_rC1=
+cgT9rct48Q.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C8A, =
+U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "PT Serif"; font-style: italic; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRTQgYoZZY2vCFuvAFT_rm1=
+cgT9rct48Q.woff2") format("woff2"); unicode-range: U+301, U+400-45F, U+490-=
+491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "PT Serif"; font-style: italic; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRTQgYoZZY2vCFuvAFT_rO1=
+cgT9rct48Q.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+=
+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9=
+F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A7=
+20-A7FF; }
+
+@font-face { font-family: "PT Serif"; font-style: italic; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRTQgYoZZY2vCFuvAFT_r21=
+cgT9rcs.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U=
++2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+=
+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRVQgYoZZY2vCFuvAFbzr-_=
+dSb_nco.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C8A, U+2=
+0B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRVQgYoZZY2vCFuvAFSzr-_=
+dSb_nco.woff2") format("woff2"); unicode-range: U+301, U+400-45F, U+490-491=
+, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRVQgYoZZY2vCFuvAFYzr-_=
+dSb_nco.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U+2C7=
+-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E9F, =
+U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-=
+A7FF; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 400;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRVQgYoZZY2vCFuvAFWzr-_=
+dSb_.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, U+2B=
+B-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U+212=
+2, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 700;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRSQgYoZZY2vCFuvAnt66qf=
+VyvVp8NAyIw.woff2") format("woff2"); unicode-range: U+460-52F, U+1C80-1C8A,=
+ U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 700;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRSQgYoZZY2vCFuvAnt66qW=
+VyvVp8NAyIw.woff2") format("woff2"); unicode-range: U+301, U+400-45F, U+490=
+-491, U+4B0-4B1, U+2116; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 700;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRSQgYoZZY2vCFuvAnt66qc=
+VyvVp8NAyIw.woff2") format("woff2"); unicode-range: U+100-2BA, U+2BD-2C5, U=
++2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1D00-1DBF, U+1E00-1E=
+9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A=
+720-A7FF; }
+
+@font-face { font-family: "PT Serif"; font-style: normal; font-weight: 700;=
+ src: url("https://fonts.gstatic.com/s/ptserif/v19/EJRSQgYoZZY2vCFuvAnt66qS=
+VyvVp8NA.woff2") format("woff2"); unicode-range: U+0-FF, U+131, U+152-153, =
+U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+2000-206F, U+20AC, U=
++2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+
+@font-face { font-family: "Work Sans"; font-style: normal; font-weight: 700=
+; src: url("https://fonts.gstatic.com/s/worksans/v24/QGY_z_wNahGAdqQ43RhVcI=
+gYT2Xz5u32K67QBiAJpo3ZKyHaQfhf.woff2") format("woff2"); unicode-range: U+10=
+2-103, U+110-111, U+128-129, U+168-169, U+1A0-1A1, U+1AF-1B0, U+300-301, U+=
+303-304, U+308-309, U+323, U+329, U+1EA0-1EF9, U+20AB; }
+
+@font-face { font-family: "Work Sans"; font-style: normal; font-weight: 700=
+; src: url("https://fonts.gstatic.com/s/worksans/v24/QGY_z_wNahGAdqQ43RhVcI=
+gYT2Xz5u32K67QBiEJpo3ZKyHaQfhf.woff2") format("woff2"); unicode-range: U+10=
+0-2BA, U+2BD-2C5, U+2C7-2CC, U+2CE-2D7, U+2DD-2FF, U+304, U+308, U+329, U+1=
+D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+211=
+3, U+2C60-2C7F, U+A720-A7FF; }
+
+@font-face { font-family: "Work Sans"; font-style: normal; font-weight: 700=
+; src: url("https://fonts.gstatic.com/s/worksans/v24/QGY_z_wNahGAdqQ43RhVcI=
+gYT2Xz5u32K67QBi8Jpo3ZKyHaQQ.woff2") format("woff2"); unicode-range: U+0-FF=
+, U+131, U+152-153, U+2BB-2BC, U+2C6, U+2DA, U+2DC, U+304, U+308, U+329, U+=
+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD; }
+------MultipartBoundary--36c6FriKl2T9Dih9V1dHFZMjUGZk1QXwGO4r5ENLB5----
+Content-Type: text/css
+Content-Transfer-Encoding: quoted-printable
+Content-Location: https://viewsourcecode.org/snaptoken/kilo/style.css
+
+@charset "utf-8";
+
+@import url("https://fonts.googleapis.com/css?family=3DPT+Serif:400,400i,70=
+0|Work+Sans:700|Fira+Mono:400,500");
+
+* { margin: 0px; padding: 0px; box-sizing: border-box; }
+
+body { font-family: "PT Serif", Utopia, Georgia, Times, "Apple Symbols", se=
+rif; line-height: 140%; color: rgb(51, 51, 51); font-size: 18px; }
+
+#container { width: 700px; margin: 18px auto; }
+
+.bar { display: block; width: 100%; background-color: rgb(204, 238, 187); b=
+ox-shadow: rgb(221, 221, 221) 0px 0px 15px 1px; }
+
+.bar > nav { display: flex; justify-content: space-between; width: 700px; m=
+argin: 0px auto; }
+
+footer.bar > nav { justify-content: center; }
+
+.bar > nav > a { display: block; padding: 2px 0px 4px; color: rgb(17, 85, 3=
+4); }
+
+#version { text-align: right; font-size: 12px; font-family: "Fira Mono", mo=
+nospace; padding-right: 5px; }
+
+#version a { color: rgb(51, 51, 51); }
+
+h1, h2, h3, h4, h5, h6 { font-family: "Work Sans", Futura, Helvetica, Arial=
+, sans-serif; color: rgb(34, 34, 34); line-height: 100%; margin-top: 32px; =
+}
+
+h2 a, h3 a, h4 a { color: inherit; text-decoration: none; }
+
+h2 a::before, h3 a::before, h4 a::before { content: "#"; color: rgb(255, 25=
+5, 255); font-weight: normal; transition: color 0.15s; display: block; floa=
+t: left; width: 32px; margin-left: -32px; }
+
+h2 a:hover::before, h3 a:hover::before, h4 a:hover::before { color: rgb(204=
+, 204, 204); }
+
+h1 { margin-top: 0px; font-size: 38px; border-bottom: 3px solid rgb(238, 11=
+9, 204); display: inline-block; }
+
+h2 { font-size: 26px; }
+
+p { margin-top: 18px; }
+
+ul, ol { margin-top: 18px; margin-left: 36px; }
+
+hr { border-top: none; border-right: none; border-left: none; border-image:=
+ initial; border-bottom: 1px solid rgb(136, 136, 136); }
+
+a { color: rgb(34, 102, 221); }
+
+code { font-family: "Fira Mono", monospace; font-size: inherit; white-space=
+: nowrap; background-color: rgb(239, 244, 234); padding: 1px 3px; }
+
+h1 code, h2 code, h3 code, h4 code, h5 code, h6 code { font-weight: normal;=
+ }
+
+kbd { font-family: "Fira Mono", monospace; border-radius: 3px; padding: 2px=
+ 3px; box-shadow: rgb(119, 119, 119) 1px 1px 1px; margin: 2px; font-size: 1=
+4px; background: rgb(247, 247, 247); font-weight: 500; color: rgb(85, 85, 8=
+5); white-space: nowrap; }
+
+h1 kbd, h2 kbd, h3 kbd, h4 kbd, h5 kbd, h6 kbd { font-size: 80%; }
+
+.diff code { font-size: 14px; line-height: 20px; padding: 0px; margin-botto=
+m: 18px; white-space: inherit; }
+
+.diff pre { background-color: rgb(255, 252, 250); padding: 5px 0px; }
+
+.diff { border: 1px solid rgb(237, 231, 227); border-radius: 3px; margin-to=
+p: 18px; }
+
+.diff .diff-header { display: flex; justify-content: space-between; padding=
+: 0px 5px; background-color: rgb(237, 231, 227); font-size: 16px; color: rg=
+b(102, 102, 102); }
+
+.diff .step-number { font-weight: bold; }
+
+.diff .step-filename { font-weight: bold; }
+
+.diff .step-name { font-family: "Fira Mono", monospace; font-size: 12px; }
+
+.diff .diff-header a { text-decoration: none; color: rgb(102, 102, 102); }
+
+.diff .diff-header a:hover { text-decoration: underline; }
+
+.diff .step-filename a { text-decoration: underline; }
+
+.diff .diff-footer { background-color: rgb(237, 231, 227); }
+
+.diff .diff-footer > div { font-size: 12px; line-height: 16px; height: 16px=
+; padding-right: 5px; text-align: right; }
+
+.diff .diff-tag-c0 { color: rgb(187, 51, 51); }
+
+.diff .diff-tag-c1 { color: rgb(51, 51, 187); }
+
+.diff .diff-tag-c2 { color: rgb(51, 187, 51); }
+
+.diff .diff-tag-c-unknown { color: rgb(170, 102, 34); }
+
+.diff .line { display: block; height: 20px; padding: 0px 5px; position: rel=
+ative; }
+
+.diff .line.folded { background-color: rgb(238, 238, 255); opacity: 0.5; }
+
+.diff ins.line { background-color: rgb(255, 255, 221); text-decoration: non=
+e; }
+
+.diff ins.line::after { display: block; content: ""; width: 20px; height: 2=
+0px; background-image: url("i/arrow.png"); background-size: 20px 20px; posi=
+tion: absolute; right: -24px; top: 0px; }
+
+.diff del.line { background-color: rgb(255, 221, 221); text-decoration: lin=
+e-through; }
+
+.diff del.line::after { display: block; content: ""; width: 20px; height: 2=
+0px; background-image: url("i/x.png"); background-size: 20px 20px; position=
+: absolute; right: -24px; top: 0px; }
+
+@media screen and (max-width: 700px) {
+  #container { width: auto; margin: 18px 0px; padding: 0px 5px; }
+  .bar > nav { width: auto; margin: 0px; padding: 0px 5px; }
+  .highlight { overflow-x: scroll; }
+  .diff .line { width: 700px; }
+  .diff ins.line::after, .diff del.line::after { display: none; }
+}
+
+.highlight table td { padding: 5px; }
+
+.highlight table pre { margin: 0px; }
+
+.highlight .cm { color: rgb(153, 153, 136); font-style: italic; }
+
+.highlight .cp { color: rgb(153, 153, 153); font-weight: 500; }
+
+.highlight .c1 { color: rgb(153, 153, 136); font-style: italic; }
+
+.highlight .cs { color: rgb(153, 153, 153); }
+
+.highlight .c, .highlight .cd { color: rgb(153, 153, 136); font-style: ital=
+ic; }
+
+.highlight .err { color: rgb(166, 23, 23); background-color: rgb(227, 210, =
+210); }
+
+.highlight .gd { color: rgb(0, 0, 0); background-color: rgb(255, 221, 221);=
+ }
+
+.highlight .ge { color: rgb(0, 0, 0); font-style: italic; }
+
+.highlight .gr { color: rgb(170, 0, 0); }
+
+.highlight .gh { color: rgb(153, 153, 153); }
+
+.highlight .gi { color: rgb(0, 0, 0); background-color: rgb(221, 255, 221);=
+ }
+
+.highlight .go { color: rgb(136, 136, 136); }
+
+.highlight .gp { color: rgb(85, 85, 85); }
+
+.highlight .gs { font-weight: 500; }
+
+.highlight .gu { color: rgb(170, 170, 170); }
+
+.highlight .gt { color: rgb(170, 0, 0); }
+
+.highlight .kc { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .kd { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .kn { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .kp { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .kr { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .kt { color: rgb(68, 85, 136); font-weight: 500; }
+
+.highlight .k, .highlight .kv { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .mf { color: rgb(0, 153, 153); }
+
+.highlight .mh { color: rgb(0, 153, 153); }
+
+.highlight .il { color: rgb(0, 153, 153); }
+
+.highlight .mi { color: rgb(0, 153, 153); }
+
+.highlight .mo { color: rgb(0, 153, 153); }
+
+.highlight .m, .highlight .mb, .highlight .mx { color: rgb(0, 153, 153); }
+
+.highlight .sb { color: rgb(221, 17, 68); }
+
+.highlight .sc { color: rgb(221, 17, 68); }
+
+.highlight .sd { color: rgb(221, 17, 68); }
+
+.highlight .s2 { color: rgb(221, 17, 68); }
+
+.highlight .se { color: rgb(221, 17, 68); }
+
+.highlight .sh { color: rgb(221, 17, 68); }
+
+.highlight .si { color: rgb(221, 17, 68); }
+
+.highlight .sx { color: rgb(221, 17, 68); }
+
+.highlight .sr { color: rgb(0, 153, 38); }
+
+.highlight .s1 { color: rgb(221, 17, 68); }
+
+.highlight .ss { color: rgb(153, 0, 115); }
+
+.highlight .s { color: rgb(221, 17, 68); }
+
+.highlight .na { color: rgb(0, 128, 128); }
+
+.highlight .bp { color: rgb(153, 153, 153); }
+
+.highlight .nb { color: rgb(0, 134, 179); }
+
+.highlight .nc { color: rgb(68, 85, 136); font-weight: 500; }
+
+.highlight .no { color: rgb(0, 128, 128); }
+
+.highlight .nd { color: rgb(60, 93, 93); font-weight: 500; }
+
+.highlight .ni { color: rgb(128, 0, 128); }
+
+.highlight .ne { color: rgb(153, 0, 0); font-weight: 500; }
+
+.highlight .nf { color: rgb(153, 0, 0); font-weight: 500; }
+
+.highlight .nl { color: rgb(153, 0, 0); font-weight: 500; }
+
+.highlight .nn { color: rgb(85, 85, 85); }
+
+.highlight .nt { color: rgb(0, 0, 128); }
+
+.highlight .vc { color: rgb(0, 128, 128); }
+
+.highlight .vg { color: rgb(0, 128, 128); }
+
+.highlight .vi { color: rgb(0, 128, 128); }
+
+.highlight .nv { color: rgb(0, 128, 128); }
+
+.highlight .ow { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .o { color: rgb(0, 0, 0); font-weight: 500; }
+
+.highlight .w { color: rgb(187, 187, 187); }
+
+.highlight { background-color: rgb(248, 248, 248); }
+------MultipartBoundary--36c6FriKl2T9Dih9V1dHFZMjUGZk1QXwGO4r5ENLB5------
