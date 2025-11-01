@@ -217,7 +217,7 @@ void editorDrawRows(struct abuf *ab) {
     if (y == E.screenrows / 3) {
       char welcome[80];
       int welcomelen = snprintf(welcome, sizeof(welcome),
-                                "text editor --version  %s", KILO_VERSION);
+                                "text editor -- version  %s", KILO_VERSION);
       if (welcomelen > E.screencols) {
         welcomelen = E.screencols;
       }
@@ -230,6 +230,21 @@ void editorDrawRows(struct abuf *ab) {
         abAppend(ab, " ", 1);
       }
       abAppend(ab, welcome, welcomelen);
+    } else if (y == E.screenrows / 3 + 1) {
+      char welcome_1[80];
+      int welcomelen_1 = snprintf(welcome_1, sizeof(welcome_1), "By Fengtao");
+      if (welcomelen_1 > E.screencols) {
+        welcomelen_1 = E.screencols;
+      }
+      int padding_1 = (E.screencols - welcomelen_1) / 2;
+      if (padding_1) {
+        abAppend(ab, "~", 1);
+        padding_1--;
+      }
+      while (padding_1--) {
+        abAppend(ab, " ", 1);
+      }
+      abAppend(ab, welcome_1, welcomelen_1);
     } else {
       abAppend(ab, "~", 1);
     }
