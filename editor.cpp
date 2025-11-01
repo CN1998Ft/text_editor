@@ -78,6 +78,13 @@
 
 #define CTRL_KEY(k) ((k) & 0x1f)
 
+enum editorKey {
+  LEFT = 1000,
+  RIGHT,
+  UP,
+  DOWN,
+};
+
 /*** data ***/
 
 struct editorConfig {
@@ -133,7 +140,7 @@ void enableRawModel() {
   }
 }
 
-char editorReadKey() {
+int editorReadKey() {
   int nread;
   char c;
   while ((nread = read(STDIN_FILENO, &c, 1)) != 1) {
@@ -141,7 +148,31 @@ char editorReadKey() {
       die("read");
     }
   }
-  return c;
+  if (c == '\x1b') {
+    char seq[3];
+
+    if (read(STDIN_FILENO, &seq[0], 1) != 1) {
+      return '\x1b';
+    }
+    if (read(STDIN_FILENO, &seq[1], 1) != 1) {
+      return '\x1b';
+    }
+    if (seq[0] == '[') {
+      switch (seq[1]) {
+      case 'A':
+        return UP;
+      case 'B':
+        return DOWN;
+      case 'C':
+        return RIGHT;
+      case 'D':
+        return LEFT;
+      }
+    }
+    return '\x1b';
+  } else {
+    return c;
+  }
 }
 
 int getCursorPosition(int *rows, int *cols) {
@@ -279,24 +310,24 @@ void editorRefreshScreen() {
 
 /*** input ***/
 
-void editorMoveCursor(char key) {
+void editorMoveCursor(int key) {
   switch (key) {
-  case 'h':
+  case LEFT:
     E.cx--;
     break;
-  case 'l':
+  case RIGHT:
     E.cx++;
     break;
-  case 'j':
+  case DOWN:
     E.cy++;
     break;
-  case 'k':
+  case UP:
     E.cy--;
     break;
   }
 }
 void editorProcessKeypress() {
-  char c = editorReadKey();
+  int c = editorReadKey();
 
   switch (c) {
   case CTRL_KEY('q'):
@@ -304,10 +335,10 @@ void editorProcessKeypress() {
     write(STDOUT_FILENO, "\x1b[H", 3);
     exit(0);
     break;
-  case 'h':
-  case 'j':
-  case 'k':
-  case 'l':
+  case UP:
+  case DOWN:
+  case LEFT:
+  case RIGHT:
     editorMoveCursor(c);
   }
 }
