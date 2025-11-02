@@ -272,6 +272,7 @@ void editorOpen() {
   ssize_t linelen = 13;
 
   E.row.size = linelen;
+  E.row.chars = malloc(linelen + 1);
   memcpy(E.row.chars, line, linelen);
   E.row.chars[linelen] = '\0';
   E.numrows = 1;
@@ -304,39 +305,47 @@ void abFree(struct abuf *ab) { free(ab->b); }
 void editorDrawRows(struct abuf *ab) {
   int y;
   for (y = 0; y < E.screenrows; y++) {
-    if (y == E.screenrows / 3) {
-      char welcome[80];
-      int welcomelen = snprintf(welcome, sizeof(welcome),
-                                "text editor -- version  %s", KILO_VERSION);
-      if (welcomelen > E.screencols) {
-        welcomelen = E.screencols;
-      }
-      int padding = (E.screencols - welcomelen) / 2;
-      if (padding) {
+    if (y >= E.numrows) {
+      if (y == E.screenrows / 3) {
+        char welcome[80];
+        int welcomelen = snprintf(welcome, sizeof(welcome),
+                                  "text editor -- version  %s", KILO_VERSION);
+        if (welcomelen > E.screencols) {
+          welcomelen = E.screencols;
+        }
+        int padding = (E.screencols - welcomelen) / 2;
+        if (padding) {
+          abAppend(ab, "~", 1);
+          padding--;
+        }
+        while (padding--) {
+          abAppend(ab, " ", 1);
+        }
+        abAppend(ab, welcome, welcomelen);
+      } else if (y == E.screenrows / 3 + 1) {
+        char welcome_1[80];
+        int welcomelen_1 = snprintf(welcome_1, sizeof(welcome_1), "By Fengtao");
+        if (welcomelen_1 > E.screencols) {
+          welcomelen_1 = E.screencols;
+        }
+        int padding_1 = (E.screencols - welcomelen_1) / 2;
+        if (padding_1) {
+          abAppend(ab, "~", 1);
+          padding_1--;
+        }
+        while (padding_1--) {
+          abAppend(ab, " ", 1);
+        }
+        abAppend(ab, welcome_1, welcomelen_1);
+      } else {
         abAppend(ab, "~", 1);
-        padding--;
       }
-      while (padding--) {
-        abAppend(ab, " ", 1);
-      }
-      abAppend(ab, welcome, welcomelen);
-    } else if (y == E.screenrows / 3 + 1) {
-      char welcome_1[80];
-      int welcomelen_1 = snprintf(welcome_1, sizeof(welcome_1), "By Fengtao");
-      if (welcomelen_1 > E.screencols) {
-        welcomelen_1 = E.screencols;
-      }
-      int padding_1 = (E.screencols - welcomelen_1) / 2;
-      if (padding_1) {
-        abAppend(ab, "~", 1);
-        padding_1--;
-      }
-      while (padding_1--) {
-        abAppend(ab, " ", 1);
-      }
-      abAppend(ab, welcome_1, welcomelen_1);
     } else {
-      abAppend(ab, "~", 1);
+      int len = E.row.size;
+      if (len > E.screencols) {
+        len = E.screencols;
+      }
+      abAppend(ab, E.row.chars, len);
     }
 
     abAppend(ab, "\x1b[K", 3);
@@ -436,7 +445,7 @@ void initEditor() {
 int main() {
   enableRawModel();
   initEditor();
-  // editorOpen();
+  editorOpen();
 
   while (1) {
     editorRefreshScreen();
