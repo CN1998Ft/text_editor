@@ -1,5 +1,5 @@
 CC=gcc
-CXX=g++
+# CXX=g++
 
-editor: editor.cpp
-	$(CXX) editor.cpp -o editor -Wall -Wextra -pedantic -std=c++17
+editor: editor.c
+	$(CC) editor.c -o editor -Wall -Wextra -pedantic -std=c99

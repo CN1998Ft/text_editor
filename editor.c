@@ -61,16 +61,15 @@
  */
 
 /*** inlcudes ***/
-#include "ctype.h"
-#include "errno.h"
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
-#include "sys/ioctl.h"
-#include "termios.h"
-#include "unistd.h"
-#include <cstdlib>
-#include <iostream>
+#include <ctype.h>
+#include <errno.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <sys/ioctl.h>
+#include <sys/types.h>
+#include <termios.h>
+#include <unistd.h>
 
 /*** defines ***/
 
@@ -92,10 +91,17 @@ enum editorKey {
 
 /*** data ***/
 
+typedef struct erow {
+  int size;
+  char *chars;
+} erow;
+
 struct editorConfig {
   int cx, cy;
   int screenrows;
   int screencols;
+  int numrows;
+  erow row;
   struct termios orig_termios;
 };
 
@@ -259,6 +265,18 @@ int getWindowSize(int *rows, int *cols) {
   }
 }
 
+/*** file i/o ***/
+
+void editorOpen() {
+  char *line = "Hello, world!";
+  ssize_t linelen = 13;
+
+  E.row.size = linelen;
+  memcpy(E.row.chars, line, linelen);
+  E.row.chars[linelen] = '\0';
+  E.numrows = 1;
+}
+
 /*** append buffer ***/
 
 struct abuf {
@@ -269,7 +287,7 @@ struct abuf {
 #define ABUF_INIT {NULL, 0}
 
 void abAppend(struct abuf *ab, const char *s, int len) {
-  char *new_buf = static_cast<char *>(realloc(ab->b, ab->len + len));
+  char *new_buf = realloc(ab->b, ab->len + len);
 
   if (new_buf == NULL) {
     return;
@@ -409,6 +427,7 @@ void editorProcessKeypress() {
 void initEditor() {
   E.cx = 0;
   E.cy = 0;
+  E.numrows = 0;
   if (getWindowSize(&E.screenrows, &E.screencols) == -1) {
     die("getWindowSize");
   }
@@ -417,6 +436,7 @@ void initEditor() {
 int main() {
   enableRawModel();
   initEditor();
+  // editorOpen();
 
   while (1) {
     editorRefreshScreen();

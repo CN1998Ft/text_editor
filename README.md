@@ -11,7 +11,7 @@
 Started on: 2025-08-15 20:23
 
 The aim of this project is to understand how does a text editor function inside
-the terminal. Also, it is for me to practice with C/C++ as I am bad at it.
+the terminal. Also, it is for me to practice with C as I am bad at it.
 
 ----
 ## LICENSE
