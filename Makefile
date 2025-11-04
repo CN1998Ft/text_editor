@@ -2,4 +2,4 @@ CC=gcc
 # CXX=g++
 
 editor: editor.c
-	$(CC) editor.c -o editor -Wall -Wextra -pedantic -std=c99
+	$(CC) editor.c -g -o editor -Wall -Wextra -pedantic -std=c99
