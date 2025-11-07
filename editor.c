@@ -428,6 +428,8 @@ void editorRefreshScreen() {
 /*** input ***/
 
 void editorMoveCursor(int key) {
+  erow *row = (E.cy >= E.numrows) ? NULL : &E.row[E.cy];
+
   switch (key) {
   case LEFT:
     if (E.cx != 0) {
@@ -435,7 +437,9 @@ void editorMoveCursor(int key) {
     }
     break;
   case RIGHT:
-    E.cx++;
+    if (row && E.cx < row->size) {
+      E.cx++;
+    }
     break;
   case DOWN:
     if (E.cy < E.numrows) {
