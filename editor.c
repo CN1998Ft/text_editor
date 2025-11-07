@@ -434,6 +434,9 @@ void editorMoveCursor(int key) {
   case LEFT:
     if (E.cx != 0) {
       E.cx--;
+    } else if (E.cy > 0) {
+      E.cy--;
+      E.cx = E.row[E.cy].size;
     }
     break;
   case RIGHT:
