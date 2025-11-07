@@ -442,6 +442,9 @@ void editorMoveCursor(int key) {
   case RIGHT:
     if (row && E.cx < row->size) {
       E.cx++;
+    } else if (row && E.cx == row->size) {
+      E.cy++;
+      E.cx = 0;
     }
     break;
   case DOWN:
