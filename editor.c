@@ -85,6 +85,7 @@
 #define CTRL_KEY(k) ((k) & 0x1f)
 
 enum editorKey {
+  BACKSPACE = 127,
   LEFT = 1000,
   RIGHT,
   UP,
@@ -583,6 +584,8 @@ void editorProcessKeypress() {
   int c = editorReadKey();
 
   switch (c) {
+  case '\r':
+    break;
   case CTRL_KEY('q'):
     write(STDOUT_FILENO, "\x1b[2J", 4);
     write(STDOUT_FILENO, "\x1b[H", 3);
@@ -595,6 +598,9 @@ void editorProcessKeypress() {
     if (E.cy < E.numrows) {
       E.cx = E.row[E.cy].size;
     }
+  case BACKSPACE:
+  case CTRL_KEY('h'):
+  case DEL_KEY:
     break;
   case PAGE_UP:
   case PAGE_DOWN: {
@@ -612,6 +618,9 @@ void editorProcessKeypress() {
   case LEFT:
   case RIGHT:
     editorMoveCursor(c);
+    break;
+  case CTRL_KEY('l'):
+  case '\x1b':
     break;
   default:
     editorInsertChar(c);
