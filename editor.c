@@ -889,7 +889,11 @@ void editorMoveCursor(int key) {
     break;
   case UP:
     if (E.cy != 0) {
-      E.cy--;
+      if (E.rowoff) {
+        E.rowoff--;
+      } else {
+        E.cy--;
+      }
     }
     break;
   }
