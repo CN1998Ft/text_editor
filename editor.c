@@ -299,11 +299,11 @@ int getWindowSize(int *rows, int *cols) {
 /*** syntax highlighting ***/
 
 void editorUpdateSyntax(erow *row) {
-  row->hl = realloc(row->hl, row->size);
-  memset(row->hl, HL_NORMAL, row->size);
+  row->hl = realloc(row->hl, row->rsize);
+  memset(row->hl, HL_NORMAL, row->rsize);
 
   int i;
-  for (i = 0; i < row->size; i++) {
+  for (i = 0; i < row->rsize; i++) {
     if (isdigit(row->render[i])) {
       row->hl[i] = HL_NUMBER;
     }
@@ -372,7 +372,7 @@ void editorUpdateRow(erow *row) {
       row->render[idx++] = row->chars[j];
     }
   }
-  row->render[idx++] = '\0';
+  row->render[idx] = '\0';
   row->rsize = idx;
 
   editorUpdateSyntax(row);
@@ -726,11 +726,12 @@ void editorDrawRows(struct abuf *ab) {
       int current_color = -1;
       int j;
       for (j = 0; j < len; j++) {
-        if (hl[j] == HL_NUMBER) {
+        if (hl[j] == HL_NORMAL) {
           if (current_color != -1) {
             abAppend(ab, "\x1b[39m", 5);
             current_color = -1;
           }
+          abAppend(ab, &c[j], 1);
         } else {
           int color = editorSyntaxToColor(hl[j]);
           if (color != current_color) {
