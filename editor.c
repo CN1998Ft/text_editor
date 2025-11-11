@@ -101,11 +101,13 @@ enum editorKey {
 
 enum editorHighlight {
   HL_NORMAL = 0,
+  HL_STRING,
   HL_NUMBER,
   HL_MATCH,
 };
 
 #define HL_HIGHLIGHT_NUMBER (1 << 0)
+#define HL_HIGHLIGHT_STRINGS (1 << 1)
 
 /*** data ***/
 
@@ -150,7 +152,7 @@ struct editorSyntax HLDB[] = {
     {
         "c",
         C_HL_extension,
-        HL_HIGHLIGHT_NUMBER,
+        HL_HIGHLIGHT_NUMBER | HL_HIGHLIGHT_STRINGS,
     },
 };
 
@@ -335,11 +337,36 @@ void editorUpdateSyntax(erow *row) {
   }
 
   int prev_sep = 1;
+  int in_string = 0;
 
   int i = 0;
   while (i < row->rsize) {
     char c = row->render[i];
     unsigned char prev_hl = (i > 0) ? row->hl[i - 1] : HL_NORMAL;
+
+    if (E.syntax->flags & HL_HIGHLIGHT_STRINGS) {
+      if (in_string) {
+        row->hl[i] = HL_STRING;
+        if (c == '\\' && i + 1 < row->rsize) {
+          row->hl[i + 1] = HL_STRING;
+          i += 2;
+          continue;
+        }
+        if (c == in_string) {
+          in_string = 0;
+        }
+        i++;
+        prev_sep = 1;
+        continue;
+      } else {
+        if (c == '"' || c == '\'') {
+          in_string = c;
+          row->hl[i] = HL_STRING;
+          i++;
+          continue;
+        }
+      }
+    }
 
     if (E.syntax->flags & HL_HIGHLIGHT_NUMBER) {
       if ((isdigit(c) && (prev_sep || prev_hl == HL_NUMBER)) ||
@@ -357,6 +384,8 @@ void editorUpdateSyntax(erow *row) {
 
 int editorSyntaxToColor(int hl) {
   switch (hl) {
+  case HL_STRING:
+    return 35;
   case HL_NUMBER:
     return 31;
   case HL_MATCH:
